@@ -1,0 +1,17 @@
+*~
+*.tgz
+.*.sw*
+.DS_Store
+
+*.ps
+*.pdf
+
+/TODO
+/notes.md
+
+*.pyc
+__pycache__
+.coverage
+/dist
+/venv
+.tox
