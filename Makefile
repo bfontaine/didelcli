@@ -22,7 +22,7 @@ endif
 deps:
 	$(BINPREFIX)pip install -r requirements.txt
 ifeq ($(PY_VERSION_SHORT),2.6)
-	$(BINPREFIX)pip install unittest2
+	$(BINPREFIX)pip install unittest2 ordereddict
 endif
 
 freeze: $(VENV)
