@@ -5,17 +5,20 @@ from cookielib import LWPCookieJar
 from os.path import expanduser, isfile
 from requests import Session as BaseSession
 
-COOKIES_FILE = expanduser('~/.didel.cookies')
-
 URLS = {
     'login': 'https://auth.univ-paris-diderot.fr/cas/login',
     'logout': 'https://auth.univ-paris-diderot.fr/cas/logout',
 }
 
+DEFAULTS = {
+    'cookies_file': expanduser('~/.didel.cookies'),
+    'user_agent': 'Python/DidelCli +b@ptistefontaine.fr',
+}
+
 class Session(BaseSession):
     """
     A session with persistent cookies storage and builtin authentification
-    support for Paris Diderot's websites.
+    support for Paris Diderot's websites as well as custom default headers.
     """
 
     def __init__(self, *args, **kwargs):
@@ -23,12 +26,28 @@ class Session(BaseSession):
         Same constructor as parent class except that if ``cookies_file`` is
         given it'll override the default cookies file.
         """
-        k = 'cookies_file'
-        cookies_file = kwargs.pop(k) if k in kwargs else COOKIES_FILE
+        for k, v in DEFAULTS.items():
+            setattr(self, k, kwargs.pop(k) if k in kwargs else v)
         super(Session, self).__init__(*args, **kwargs)
-        self.cookies_file = k
-        self.cookies = LWPCookieJar(cookies_file)
+        self.cookies = LWPCookieJar(self.cookies_file)
         self.load()
+
+    def _set_header_defaults(self, kwargs):
+        """
+        Internal utility to set default headers on get/post requests.
+        """
+        headers = {'User-Agent': self.user_agent}
+        req_headers = kwargs.pop('headers', {})
+        headers.update(req_headers)
+        kwargs['headers'] = headers
+
+    def get(self, *args, **kwargs):
+        self._set_header_defaults(kwargs)
+        return super(Session, self).get(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        self._set_header_defaults(kwargs)
+        return super(Session, self).post(*args, **kwargs)
 
     def save(self):
         """
