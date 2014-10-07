@@ -14,15 +14,16 @@ class Student(DidelEntity):
         super(Student, self).__init__()
         self.session = Session()
         self.username = username
-        self.session.login(self.username, password)
         self.path = '/claroline/auth/profile.php'
-        self._courses = {}
+        self._courses = {}  # cache
+        self.session.login(self.username, password)
+        self.fetch(self.session)
 
 
     def populate(self, soup, *args, **kw):
-        aliases = {'officialCode': 'code', 'uiToEdit': 'auth_id'}
+        aliases = {'officialCode': 'code', 'uidToEdit': 'auth_id'}
         for attr in ('firstname', 'lastname', 'officialCode', 'username',
-                'email', 'phone', 'skype', 'uiToEdit'):
+                'email', 'phone', 'skype', 'uidToEdit'):
             value = soup.select('input#%s' % attr)[0].attrs['value']
             attr = aliases.get(attr, attr)
             setattr(self, attr, value)
