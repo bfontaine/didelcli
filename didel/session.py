@@ -8,12 +8,17 @@ from requests import Session as BaseSession
 URLS = {
     'login': 'https://auth.univ-paris-diderot.fr/cas/login',
     'logout': 'https://auth.univ-paris-diderot.fr/cas/logout',
+
+    'login_service':
+        'http://didel.script.univ-paris-diderot.fr/claroline/auth/login.php' \
+        '?authModeReq=CAS',
 }
 
 DEFAULTS = {
     'cookies_file': expanduser('~/.didel.cookies'),
     'user_agent': 'Python/DidelCli +b@ptistefontaine.fr',
 }
+
 
 class Session(BaseSession):
     """
@@ -32,6 +37,7 @@ class Session(BaseSession):
         self.cookies = LWPCookieJar(self.cookies_file)
         self.load()
 
+
     def _set_header_defaults(self, kwargs):
         """
         Internal utility to set default headers on get/post requests.
@@ -41,13 +47,16 @@ class Session(BaseSession):
         headers.update(req_headers)
         kwargs['headers'] = headers
 
+
     def get(self, *args, **kwargs):
         self._set_header_defaults(kwargs)
         return super(Session, self).get(*args, **kwargs)
 
+
     def post(self, *args, **kwargs):
         self._set_header_defaults(kwargs)
         return super(Session, self).post(*args, **kwargs)
+
 
     def save(self):
         """
@@ -56,6 +65,7 @@ class Session(BaseSession):
         if self.cookies_file is not None:
             self.cookies.save()
 
+
     def load(self):
         """
         Load a previously saved session
@@ -63,26 +73,33 @@ class Session(BaseSession):
         if isfile(self.cookies_file):
             self.cookies.load()
 
+
     def login(self, username, passwd):
         """
         Authenticate an user
         """
+        params = {
+            'service': URLS['login_service'],
+        }
         url = URLS['login']
-        soup = BeautifulSoup(self.get(url).text)
+        soup = BeautifulSoup(self.get(url, params=params).text)
         lts = soup.select('input[name=lt]')
         if not lts:
             return False
         formkey = lts[0].attrs['value']
-        resp = self.post(url, {
+        data = {
             'username': username,
             'password': passwd,
             'lt': formkey,
             '_eventId': 'submit',
-        })
+        }
+        resp = self.post(url, params=params, data=data)
         return resp.ok and 'Log In Successful' in resp.text
+
 
     def logout(self):
         return 'Logout successful' in self.get(URLS['logout']).text
+
 
     def __del__(self):
         self.save()

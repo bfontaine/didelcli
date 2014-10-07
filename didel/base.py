@@ -15,6 +15,7 @@ class DidelEntity(object):
     def __init__(self, *args, **kwargs):
         self._resources = {}
 
+
     def fetch(self, session):
         """
         Fetch ``self.path`` using the given session and call ``self.populate``
@@ -38,14 +39,17 @@ class DidelEntity(object):
         populate(soup, session)
         setattr(self, '_populated', True)
 
+
     def populate(self, soup, session, **kwargs):
         raise NotImplementedError
+
 
     def is_populated(self):
         """
         Test if the element has been populated
         """
-        return getattr(self, '_populated', False)
+        return hasattr(self, '_populated')
+
 
     def add_resource(self, name, value):
         """
@@ -53,12 +57,13 @@ class DidelEntity(object):
         """
         self._resources[name] = value
 
+
     def __getattr__(self, name):
         """
         Lazily populate subresources when they're acceded
         """
         if name not in self._resources:
-            return super(DidelEntity, self).__getattr__(name)
+            raise TypeError("'%s' has not attribute '%s'" % (self, name))
 
         if not self.is_populated():
             raise Exception('%s is not populated' % repr(self))
@@ -67,6 +72,7 @@ class DidelEntity(object):
         res.fetch(self.session)
         setattr(self, name, res)
         return res
+
 
     def __getitem__(self, idx):
         """
