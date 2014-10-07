@@ -1,4 +1,4 @@
-.PHONY: all freeze check covercheck coverhtml
+.PHONY: all freeze check covercheck coverhtml dist
 
 SRC=didel
 
@@ -47,5 +47,8 @@ coverhtml:
 	@make COVERAGE_REPORT=html BINPREFIX=$(BINPREFIX) covercheck
 	@echo '--> open htmlcov/index.html'
 
-publish: deps check-versions
-	$(BINPREFIX)python setup.py sdist upload
+dist: deps
+	$(BINPREFIX)python setup.py sdist
+
+publish: dist check-versions
+	$(BINPREFIX)python setup.py upload
