@@ -11,6 +11,29 @@ ROOT_URL = 'http://didel.script.univ-paris-diderot.fr'
 
 
 class DidelEntity(object):
+    """
+    Common base for all fetchable entities. It provides a convenient way to
+    fetch a page describing an entity and populate the object with it.
+
+    Usage: ::
+
+        class MyEntity(DidelEntity):
+
+            def __init__(self, someArg):
+                self.path = '/foo/bar/qux/%s.html' % someArg
+                super(MyEntity, self).__init__()
+
+            def populate(self, soup, session, **kw):
+                # populate the object with ``soup``
+                self.title = soup.select('h1')[0].get_text()
+
+    The entity can then be populated: ::
+
+        s = Session()
+        m = MyEntity("foo")
+        m.fetch(s)
+        print m.title
+    """
 
     def __init__(self, *args, **kwargs):
         self._resources = {}
@@ -19,7 +42,9 @@ class DidelEntity(object):
     def fetch(self, session):
         """
         Fetch ``self.path`` using the given session and call ``self.populate``
-        on the returned text
+        on the returned text.
+        It sets ``self.session`` to the given session and ``self._populated``
+        to ``True``.
         """
         populate = getattr(self, 'populate', None)
         if not populate or self.is_populated():
@@ -41,6 +66,9 @@ class DidelEntity(object):
 
 
     def populate(self, soup, session, **kwargs):
+        """
+        This should be implemented by subclasses
+        """
         raise NotImplementedError
 
 
@@ -53,7 +81,9 @@ class DidelEntity(object):
 
     def add_resource(self, name, value):
         """
-        Add a subresource to this element
+        Add a subresource to this element. It should be a ``DidelEntity``.
+        ``name`` will be used as an attribute name which will, when first
+        acceded, populate the subresource and cache it.
         """
         self._resources[name] = value
 
@@ -72,7 +102,6 @@ class DidelEntity(object):
         res.fetch(self.session)
         setattr(self, name, res)
         return res
-
 
     def __getitem__(self, idx):
         """

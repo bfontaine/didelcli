@@ -6,6 +6,9 @@ from didel.base import DidelEntity
 from didel.souputils import parse_homemade_dl
 
 class CoursePage(DidelEntity):
+    """
+    A common base for Course-related pages
+    """
 
     def __init__(self, ref):
         super(CoursePage, self).__init__()
@@ -16,7 +19,11 @@ class CoursePage(DidelEntity):
         self.ref = ref
 
 
+
 class CourseHomework(CoursePage):
+    """
+    A course homework
+    """
 
     def populate(self, soup, session, **kw):
         content = soup.select('#courseRightContent')[0]
@@ -29,7 +36,18 @@ class CourseHomework(CoursePage):
         self.visibility = attrs.get(u'visibilit\xe9 de la soumission')
 
 
+    def submit(self, student, data):
+        """
+        Create a new submission for this homework
+        """
+        pass  # TODO
+
+
+
 class CourseHomeworks(CoursePage, list):
+    """
+    Homeworks list for a course
+    """
 
     URL_FMT = '/claroline/work/work.php?cidReset=true&cidReq={ref}'
 
@@ -40,13 +58,20 @@ class CourseHomeworks(CoursePage, list):
             self.append(CourseHomework(url % tr.select('a')[0].attrs['href']))
 
 
+
 class Course(CoursePage):
+    """
+    A course. It has the following attributes: ``title``, ``teacher``,
+    ``about`` and the following sub-resources:
+        - ``homeworks``
+    """
 
     URL_FMT = '/claroline/course/index.php?cid={ref}&cidReset=true&cidReq={ref}'
 
     def __init__(self, ref):
         super(Course, self).__init__(ref)
         self.add_resource('homeworks', CourseHomeworks(ref))
+
 
     def populate(self, soup, session):
         header = soup.select('.courseInfos')[0]
