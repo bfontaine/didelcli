@@ -16,6 +16,7 @@ class Student(DidelEntity):
         self.username = username
         self.session.login(self.username, password)
         self.path = '/claroline/auth/profile.php'
+        self._courses = {}
 
 
     def populate(self, soup, *args, **kw):
@@ -28,6 +29,11 @@ class Student(DidelEntity):
 
 
     def get_course(self, ref):
-        c = Course(ref)
-        c.fetch(self.session)
-        return c
+        """
+        Return a Course object
+        """
+        if not ref in self._courses:
+            c = Course(ref, self)
+            c.fetch(self.session)
+            self._courses[ref] = c
+        return self._courses[ref]

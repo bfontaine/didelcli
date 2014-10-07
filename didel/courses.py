@@ -64,12 +64,18 @@ class Course(CoursePage):
     A course. It has the following attributes: ``title``, ``teacher``,
     ``about`` and the following sub-resources:
         - ``homeworks``
+
+    Additionally, it keeps a reference to its student with ``student``
     """
 
     URL_FMT = '/claroline/course/index.php?cid={ref}&cidReset=true&cidReq={ref}'
 
-    def __init__(self, ref):
+    def __init__(self, ref, student=None):
+        """
+        Create a new course from a reference, and an optional student
+        """
         super(Course, self).__init__(ref)
+        self.student = student
         self.add_resource('homeworks', CourseHomeworks(ref))
 
 
@@ -81,3 +87,23 @@ class Course(CoursePage):
         about = soup.select('#portletAbout')
         if about:
             self.about = about[0].get_text().strip()
+
+
+    def enroll(self):
+        """
+        Enroll the current student in this course
+        """
+        path = '/claroline/auth/courses.php'
+        text = u'Vous êtes désormais inscrit'
+        params = {'cmd': 'exReg', 'course': self.ref}
+        return self.session.get_ensure_text(path, text, params=params)
+
+
+    def unenroll(self):
+        """
+        Unenroll the current student from this course
+        """
+        path = '/claroline/auth/courses.php'
+        text = u'Vous avez été désinscrit'
+        params = {'cmd': 'exUnreg', 'course': self.ref}
+        return self.session.get_ensure_text(path, text, params=params)

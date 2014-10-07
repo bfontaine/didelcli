@@ -5,6 +5,8 @@ from cookielib import LWPCookieJar
 from os.path import expanduser, isfile
 from requests import Session as BaseSession
 
+from didel.base import ROOT_URL
+
 URLS = {
     'login': 'https://auth.univ-paris-diderot.fr/cas/login',
     'logout': 'https://auth.univ-paris-diderot.fr/cas/logout',
@@ -48,14 +50,26 @@ class Session(BaseSession):
         kwargs['headers'] = headers
 
 
-    def get(self, *args, **kwargs):
-        self._set_header_defaults(kwargs)
-        return super(Session, self).get(*args, **kwargs)
+    def get_url(self, url):
+        """
+        Get the final URL for a given one. If it starts with a slash (``/``),
+        the ``ROOT_URL`` is prepended.
+        """
+        if url.startswith('/'):
+            url = '%s%s' % (ROOT_URL, url)
+        return url
 
 
-    def post(self, *args, **kwargs):
+    def get(self, url, *args, **kwargs):
         self._set_header_defaults(kwargs)
-        return super(Session, self).post(*args, **kwargs)
+        url = self.get_url(url)
+        return super(Session, self).get(url, *args, **kwargs)
+
+
+    def post(self, url, *args, **kwargs):
+        self._set_header_defaults(kwargs)
+        url = self.get_url(url)
+        return super(Session, self).post(url, *args, **kwargs)
 
 
     def save(self):
@@ -98,7 +112,16 @@ class Session(BaseSession):
 
 
     def logout(self):
-        return 'Logout successful' in self.get(URLS['logout']).text
+        return self.get_ensure_text(URLS['logout'], 'Logout successful')
+
+
+    def get_ensure_text(self, url, text, *args, **kw):
+        """
+        Make a ``GET`` request and test if the given text is present in the
+        returned html
+        """
+        resp = self.get(url, *args, **kw)
+        return resp.ok and text in resp.text
 
 
     def __del__(self):
