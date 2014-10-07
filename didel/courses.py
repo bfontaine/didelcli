@@ -57,8 +57,7 @@ class CourseHomework(CoursePage):
         """
         authors = '%s %s' % (student.lastname, student.firstname)
         data = {
-            # should be retrieved from the form
-            'claroFormId': '424242424242a',
+            'claroFormId': '42',
             'cmd': 'exSubWrk',
             'cidReset': 'true',
             'cidReq': self.course_code,

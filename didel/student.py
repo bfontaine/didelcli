@@ -7,7 +7,7 @@ from didel.session import Session
 
 class Student(DidelEntity):
     """
-    A virtual student, i.e. a DidEL sesion
+    A virtual student, i.e. a DidEL session
     """
 
     def __init__(self, username, password):
