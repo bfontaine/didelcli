@@ -2,6 +2,11 @@
 
 from __future__ import unicode_literals
 
+try:
+    from urlparse import urlparse, parse_qs
+except ImportError:  # Python 3
+    from urllib.parse import urlparse, parse_qs
+
 from didel.base import DidelEntity
 from didel.souputils import parse_homemade_dl
 
@@ -25,6 +30,11 @@ class CourseHomework(CoursePage):
     A course homework
     """
 
+    def __init__(self, path, course_code):
+        super(CourseHomework, self).__init__(path)
+        self.course_code = course_code
+
+
     def populate(self, soup, session, **kw):
         content = soup.select('#courseRightContent')[0]
         attrs = parse_homemade_dl(content.select('p small')[0])
@@ -34,13 +44,36 @@ class CourseHomework(CoursePage):
         self.submission_type = attrs.get('type de soumission')
         self.homework_type = attrs.get('type de travail')
         self.visibility = attrs.get(u'visibilit\xe9 de la soumission')
+        self.assig_id = parse_qs(urlparse(self.path).query)['assigId'][0]
 
 
-    def submit(self, student, data):
+    def submit(self, student, title, datafile, description=''):
         """
         Create a new submission for this homework
+        - ``student``: a ``Student`` object for the currently connected user
+        - ``title``: the assignment's title
+        - ``datafile``: an open file-like object for the attachment
+        - ``description``: an optional description
         """
-        pass  # TODO
+        authors = '%s %s' % (student.lastname, student.firstname)
+        data = {
+            # should be retrieved from the form
+            'claroFormId': '424242424242a',
+            'cmd': 'exSubWrk',
+            'cidReset': 'true',
+            'cidReq': self.course_code,
+            'wrkTitle': title,
+            'wrkAuthor': authors,
+            'wrkTxt': description,
+            'submitWrk': 'Ok',
+        }
+        files = {
+            'wrkFile': datafile
+        }
+        path_fmt = '/claroline/work/user_work.php?assigId={aid}&authId={uid}'
+        path = path_fmt.format(aid=self.assig_id, uid=student.auth_id)
+        resp = self.session.post(path, data=data, files=files)
+        return resp.ok and title in resp.text
 
 
 
@@ -53,9 +86,10 @@ class CourseHomeworks(CoursePage, list):
 
     def populate(self, soup, session):
         trs = soup.select('#courseRightContent table tbody tr')
-        url = '/claroline/work/%s'
+        path_fmt = '/claroline/work/%s'
         for tr in trs:
-            self.append(CourseHomework(url % tr.select('a')[0].attrs['href']))
+            path = path_fmt % tr.select('a')[0].attrs['href']
+            self.append(CourseHomework(path, self.ref))
 
 
 
