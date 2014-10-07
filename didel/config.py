@@ -83,7 +83,7 @@ class DidelConfig(object):
         "42"
         """
         section, key = self._split_path(key)
-        if not self.config.has_section(section):
+        if not self.config.has_section(section) or section == 'secret':
             return None
         return self.config.get(section, key)
 
@@ -93,6 +93,8 @@ class DidelConfig(object):
         Yield all items from this config, as tuples of ``(key, value)``
         """
         for section in self.config.sections():
+            if section == 'secret':
+                continue
             for k, v in self.config.items(section):
                 yield ('%s.%s' % (section, k), v)
 

@@ -43,8 +43,8 @@ class DidelCli(object):
                 continue
             cmd = getattr(self, mth)
             doc = cmd.__doc__
-            name = cmd[name_offset:].replace('_', ':')
-            print("%10s -- %65s" % (name, doc))
+            name = mth[name_offset:].replace('_', ':')
+            print("%10s %65s" % (name, doc))
 
 
     def print_action_help(self, action, params, docstring=''):
@@ -77,6 +77,17 @@ class DidelCli(object):
         """
         for kv in self.config.items():
             print('%s=%s' % kv)
+
+
+    def action_login_init(self, username):
+        """
+        Set your credentials. The command will ask for your password and store
+        both your username and password in a secured file. It doesn't check if
+        they're valid.
+        """
+        from getpass import getpass
+        self.config.set('secret.username', username)
+        self.config.set('secret.password', getpass('Password: '))
 
 
     def run(self):
