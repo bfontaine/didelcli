@@ -3,9 +3,6 @@
 .*.sw*
 .DS_Store
 
-*.ps
-*.pdf
-
 /TODO
 /notes.md
 
@@ -15,3 +12,5 @@ __pycache__
 /dist
 /venv
 .tox
+
+_site
