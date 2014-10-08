@@ -9,26 +9,22 @@
     <link rel="stylesheet" href="stylesheets/mobile.css" media="handheld, only screen and (max-device-width:640px)">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
 
-    <script type="text/javascript" src="javascripts/modernizr.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript" src="javascripts/headsmart.min.js"></script>
-    <script type="text/javascript">
-      $(document).ready(function () {
-        $('#main_content').headsmart()
-      })
-    </script>
-    <title>Didel CLI by bfontaine</title>
+    <script src="javascripts/modernizr.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/headsmart.min.js"></script>
+    <script>$(function(){$('#main_content').headsmart()});</script>
+    <title>{{ page.title }}</title>
   </head>
 
   <body>
-    <a id="forkme_banner" href="https://github.com/bfontaine/didelcli">View on GitHub</a>
+    <a id="forkme_banner" href="https://github.com/bfontaine/didelcli">{{ page.view_on_gh }}</a>
     <div class="shell">
 
       <header>
         <span class="ribbon-outer">
           <span class="ribbon-inner">
-            <h1>Didel CLI</h1>
-            <h2>DidEL in the command-line</h2>
+            <h1>{{ page.project_title }}</h1>
+            <h2>{{ page.project_subtitle }}</h2>
           </span>
           <span class="left-tail"></span>
           <span class="right-tail"></span>
@@ -37,32 +33,33 @@
 
       <section id="downloads">
         <span class="inner">
-          <a href="https://github.com/bfontaine/didelcli/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/bfontaine/didelcli/tarball/master" class="tgz"><em>download</em> .TGZ</a>
+          <a href="https://github.com/bfontaine/didelcli/zipball/master"
+             class="zip"><em>{{ page.download }}</em> .ZIP</a><a
+             href="https://github.com/bfontaine/didelcli/tarball/master"
+             class="tgz"><em>{{ page.download }}</em> .TGZ</a>
         </span>
       </section>
-
 
       <span class="banner-fix"></span>
 
 
       <section id="main_content">
-        <p>WIP</p>
+        {{ content }}
       </section>
 
       <footer>
         <span class="ribbon-outer">
           <span class="ribbon-inner">
-            <p>this project by <a href="https://github.com/bfontaine">bfontaine</a> can be found on <a href="https://github.com/bfontaine/didelcli">GitHub</a></p>
+            <p>{{ page.this_prj_by }} <a href="https://github.com/bfontaine">bfontaine</a> {{ page.can_be_found_on }} <a href="https://github.com/bfontaine/didelcli">GitHub</a></p>
           </span>
           <span class="left-tail"></span>
           <span class="right-tail"></span>
         </span>
-        <p>Generated with <a href="http://pages.github.com">GitHub Pages</a> using Merlot</p>
+        <p>{{ page.generated_with }} <a href="http://pages.github.com">GitHub
+          Pages</a> {{ page.using }} Merlot</p>
         <span class="octocat"></span>
       </footer>
 
     </div>
-
-    
   </body>
 </html>

@@ -1,0 +1,8 @@
+/venv
+/dist
+/didel
+/tests
+/_site
+__pycache__
+*.sw*
+*.pyc
