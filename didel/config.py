@@ -13,6 +13,8 @@ class DidelConfig(object):
     """
     A wrapper for Python's ConfigParser which uses paths instead of sections
 
+    It must be saved with ``.save()`` to be persistent.
+
     >>> config = DidelConfig("foo.conf")
     >>> config.set("foo", 45)
     >>> config.get("foo")
@@ -22,6 +24,7 @@ class DidelConfig(object):
     None
     >>> config.get("stuff.bar")
     "hello"
+    >>> config.save()
     """
 
     SOURCE_FILE = expanduser('~/.didel.conf')
@@ -62,16 +65,18 @@ class DidelConfig(object):
         return key.split('.', 1) if '.' in key else ('DEFAULT', key)
 
 
-    def set(self, key, value):
+    def set(self, key, value, save=False):
         """
         Set a value. It creates the section if it doesn't exist
 
-        >>> config.set("foo.bar", 42)
+        >>> config.set("foo.bar", "42")
         """
         section, key = self._split_path(key)
         if not self.config.has_section(section):
             self.config.add_section(section)
         self.config.set(section, key, value)
+        if save:
+            self.save()
         return self
 
 
@@ -83,7 +88,8 @@ class DidelConfig(object):
         "42"
         """
         section, key = self._split_path(key)
-        if not self.config.has_section(section) or section == 'secret':
+        if section == 'secret' or not self.config.has_section(section) or \
+                not self.config.has_option(section, key):
             return None
         return self.config.get(section, key)
 
@@ -97,7 +103,3 @@ class DidelConfig(object):
                 continue
             for k, v in self.config.items(section):
                 yield ('%s.%s' % (section, k), v)
-
-
-    def __del__(self):
-        self.save()

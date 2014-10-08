@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 
-from sys import argv
+from sys import argv, exit
 
 from didel import __version__
 from didel.config import DidelConfig
@@ -37,7 +37,7 @@ class DidelCli(object):
     def print_help(self):
         name_offset = len('action_')
         print("\nUsage:\n\t%s <subcommand> args..." % self.exe)
-        print("\nAvailable subcommands:")
+        print("\nAvailable subcommands:\n")
         for mth in dir(self):
             if not mth.startswith('action_'):
                 continue
@@ -61,14 +61,17 @@ class DidelCli(object):
         """
         Set a configuration variable
         """
-        self.config.set(key, value)
+        self.config.set(key, value, save=True)
 
 
     def action_config_get(self, key):
         """
         Get a configuration variable
         """
-        print(self.config.get(key))
+        value = self.config.get(key)
+        if value is None:
+            return 1
+        print(value)
 
 
     def action_config_list(self):
@@ -131,4 +134,5 @@ def run():
     """
     Start the command-line app
     """
-    DidelCli(argv).run()
+    ret = DidelCli(argv).run() or 0
+    exit(ret)
