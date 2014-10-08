@@ -8,8 +8,8 @@ view_on_gh: View on GitHub
 download: download
 generated_with: Generated with
 using: using
-this_prj_by: Ce projet de
-can_be_found_on: est hébergé sur
+this_prj_by: This project by
+can_be_found_on: can be found on
 ---
 WIP
 
