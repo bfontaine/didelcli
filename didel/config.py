@@ -5,6 +5,7 @@ try:
 except ImportError:  # Python 3
     from configparser import SafeConfigParser
 
+import base64
 from os import chmod
 from os.path import expanduser, isfile
 
@@ -28,6 +29,7 @@ class DidelConfig(object):
     """
 
     SOURCE_FILE = expanduser('~/.didel.conf')
+    SECRET_SECTION = 'secret'
     _default = None
 
     @classmethod
@@ -87,11 +89,50 @@ class DidelConfig(object):
         >>> config.get("foo.bar")
         "42"
         """
-        section, key = self._split_path(key)
-        if section == 'secret' or not self.config.has_section(section) or \
-                not self.config.has_option(section, key):
+        if not self.has_key(key):
             return None
+        section, key = self._split_path(key)
         return self.config.get(section, key)
+
+
+    def has_key(self, key):
+        """
+        Test if a key exist
+        """
+        section, key = self._split_path(key)
+        cfg = self.config
+        return cfg.has_section(section) and cfg.has_option(section, key)
+
+
+    def set_secret(self, key, value, save=False):
+        """
+        Same as ``set`` but use a simple encryption. If no section is
+        specified, it uses the secret one.
+        """
+        if '.' not in key:
+            key = '%s.%s' % (self.SECRET_SECTION, key)
+        return self.set(key, base64.b16encode(value), save)
+
+
+    def get_secret(self, key):
+        """
+        Same as ``get`` but use a simple encryption. If no section is
+        specified, it uses the secret one.
+        """
+        if '.' not in key:
+            key = '%s.%s' % (self.SECRET_SECTION, key)
+        value = self.get(key)
+        if value is not None:
+            return base64.b16decode(value)
+
+
+    def has_secret_key(self, key):
+        """
+        Same as ``has_key`` but for the secret section
+        """
+        if '.' not in key:
+            key = '%s.%s' % (self.SECRET_SECTION, key)
+        return self.has_key(key)
 
 
     def items(self):
@@ -99,7 +140,7 @@ class DidelConfig(object):
         Yield all items from this config, as tuples of ``(key, value)``
         """
         for section in self.config.sections():
-            if section == 'secret':
+            if section == self.SECRET_SECTION:
                 continue
             for k, v in self.config.items(section):
                 yield ('%s.%s' % (section, k), v)

@@ -2,10 +2,12 @@
 
 from __future__ import print_function
 
+from getpass import getpass
 from sys import argv, exit
 
 from didel import __version__
 from didel.config import DidelConfig
+from didel.student import Student
 
 HELP_FLAGS = ('-h', '-help', '--help')
 
@@ -28,6 +30,16 @@ class DidelCli(object):
         self.argv = argv
         self.exe = self.argv.pop(0)
         self.config = DidelConfig.get_default()
+
+
+    def get_student(self):
+        username = self.config.get_secret('username')
+        passwd = self.config.get_secret('password')
+        if username is None or passwd is None:
+            print("Configure your login credentials with" \
+                  " '%s login:init <username>'" % self.exe)
+            return None
+        return Student(username, passwd)
 
 
     def print_version(self):
@@ -88,9 +100,21 @@ class DidelCli(object):
         both your username and password in a secured file. It doesn't check if
         they're valid.
         """
-        from getpass import getpass
-        self.config.set('secret.username', username)
-        self.config.set('secret.password', getpass('Password: '))
+        self.config.set_secret('username', username)
+        self.config.set_secret('password', getpass('Password: '))
+        self.config.save()
+
+
+    def action_courses_show(self, code):
+        """
+        Show some infos about a course
+        """
+        s = self.get_student()
+        if not s:
+            return 1
+        course = s.get_course(code)
+        print("%s (%s)\n" % (course.title, course.teacher))
+        print(course.about)
 
 
     def run(self):
