@@ -50,5 +50,5 @@ coverhtml:
 dist: deps
 	$(BINPREFIX)python setup.py sdist
 
-publish: dist check-versions
-	$(BINPREFIX)python setup.py upload
+publish: check-versions
+	$(BINPREFIX)python setup.py sdist upload
