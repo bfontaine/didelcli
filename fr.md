@@ -61,6 +61,15 @@ Obtenir des informations sur un cours : `didel courses:show <code>`
 
     Visitez très régulièrement le blog du cours : didiode.fr.
 
+### Profil
+
+Obtenir des informations sur votre profil DidEL : `didel profile:show`
+
+    $ didel profile:show
+    Alice Tappart (atappa42)
+    Student number: 2190041X
+    Email: alice.tappart@etu.univ-paris-diderot.fr
+
 ## Contribuer
 
 Le code-source complet de **DidEL CLI** est disponible sur [GitHub][gh]. Vous
