@@ -52,6 +52,15 @@ DidEL n’a pas d’[API][api-wp], donc l’outil ne fait que reproduire le
 comportement d’un utilisateur normal : il se connecte et parcours les pages,
 récupérant les informations depuis celles-ci.
 
+### Cours
+
+Obtenir des informations sur un cours : `didel courses:show <code>`
+
+    $ didel courses:show IO2
+    Internet & Outils (Christophe Prieur)
+
+    Visitez très régulièrement le blog du cours : didiode.fr.
+
 ## Contribuer
 
 Le code-source complet de **DidEL CLI** est disponible sur [GitHub][gh]. Vous
