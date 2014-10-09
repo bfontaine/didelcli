@@ -56,7 +56,7 @@ class DidelCli(object):
             cmd = getattr(self, mth)
             doc = cmd.__doc__
             name = mth[name_offset:].replace('_', ':')
-            print("%10s %65s" % (name, doc))
+            print("%s\n%s" % (name, doc.strip('\n')))
 
 
     def print_action_help(self, action, params, docstring=''):
@@ -103,6 +103,22 @@ class DidelCli(object):
         self.config.set_secret('username', username)
         self.config.set_secret('password', getpass('Password: '))
         self.config.save()
+
+
+    def action_profile_show(self):
+        """
+        Show some info about your profile
+        """
+        s = self.get_student()
+        if not s:
+            return 1
+        print("%s %s (%s)" % (s.firstname, s.lastname, s.username))
+        print("Student number: %s" % s.code)
+        for key in ('email', 'phone', 'skype'):
+            value = getattr(s, key, None)
+            if not value:
+                continue
+            print("%s: %s" % (key.capitalize(), value))
 
 
     def action_courses_show(self, code):
