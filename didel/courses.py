@@ -27,7 +27,7 @@ class CoursePage(DidelEntity):
 
 class CourseAssignment(CoursePage):
     """
-    A course homework
+    A course assignment
     """
 
     def __init__(self, path, course_code):
@@ -42,14 +42,14 @@ class CourseAssignment(CoursePage):
         self.begin = attrs.get('du')
         self.end = attrs.get('au')
         self.submission_type = attrs.get('type de soumission')
-        self.homework_type = attrs.get('type de travail')
+        self.work_type = attrs.get('type de travail')
         self.visibility = attrs.get(u'visibilit\xe9 de la soumission')
         self.assig_id = parse_qs(urlparse(self.path).query)['assigId'][0]
 
 
     def submit(self, student, title, datafile, description=''):
         """
-        Create a new submission for this homework
+        Create a new submission for this assignment
         - ``student``: a ``Student`` object for the currently connected user
         - ``title``: the assignment's title
         - ``datafile``: an open file-like object for the attachment

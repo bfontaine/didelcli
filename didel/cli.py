@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import inspect
 from getpass import getpass
+from os.path import expanduser
 from sys import argv, exit
 
 from didel import __version__
@@ -149,6 +150,48 @@ class DidelCli(object):
         if not course:
             return False
         return course.unenroll()
+
+
+    def action_assignments_list(self, course_code):
+        """
+        List a course's assignments
+        """
+        course = self.get_course(course_code)
+        for i, asg in enumerate(course.assignments):
+            idx = i + 1  # start indexes at 1
+            print("%d) %s (%s)" % (idx, asg.title, asg.end))
+
+
+    def action_assignments_show(self, course_code, index):
+        """
+        Show a course's assignment. The index can be obtained with
+        'assignments:list', the first assignment is '1', the second '2', etc.
+        """
+        index = int(index)
+        course = self.get_course(course_code)
+        if not course:
+            return False
+        a = course.assignments[index - 1]  # indexes start at 1
+        print(a.title)
+        print("%s -> %s" % (a.begin, a.end))
+        print("Type: %s" % a.submission_type)
+        print("Visibility: %s", a.visibility)
+        print("Work Type: %s", a.work_type)
+
+
+    def action_assignments_submit(self, course_code, index, title, filename):
+        """
+        Submit an assigment. 'title' is its title (e.g. "TP 1"), and 'filename'
+        is the file that should be attached to it.
+        """
+        index = int(index)
+        s = self.get_student()
+        if not s:
+            return False
+        course = s.get_course(course_code)
+        a = course.assignments[index - 1]  # indexes start at 1
+        with open(expanduser(filename), 'rb') as f:
+            return a.submit(s, title, f)
 
 
     def run(self):
