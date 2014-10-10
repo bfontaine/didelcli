@@ -25,13 +25,13 @@ class CoursePage(DidelEntity):
 
 
 
-class CourseHomework(CoursePage):
+class CourseAssignment(CoursePage):
     """
     A course homework
     """
 
     def __init__(self, path, course_code):
-        super(CourseHomework, self).__init__(path)
+        super(CourseAssignment, self).__init__(path)
         self.course_code = course_code
 
 
@@ -76,9 +76,9 @@ class CourseHomework(CoursePage):
 
 
 
-class CourseHomeworks(CoursePage, list):
+class CourseAssignments(CoursePage, list):
     """
-    Homeworks list for a course
+    Assignments list for a course
     """
 
     URL_FMT = '/claroline/work/work.php?cidReset=true&cidReq={ref}'
@@ -88,7 +88,7 @@ class CourseHomeworks(CoursePage, list):
         path_fmt = '/claroline/work/%s'
         for tr in trs:
             path = path_fmt % tr.select('a')[0].attrs['href']
-            self.append(CourseHomework(path, self.ref))
+            self.append(CourseAssignment(path, self.ref))
 
 
 
@@ -96,7 +96,7 @@ class Course(CoursePage):
     """
     A course. It has the following attributes: ``title``, ``teacher``,
     ``about`` and the following sub-resources:
-        - ``homeworks``
+        - ``assignments``
 
     Additionally, it keeps a reference to its student with ``student``
     """
@@ -109,7 +109,7 @@ class Course(CoursePage):
         """
         super(Course, self).__init__(ref)
         self.student = student
-        self.add_resource('homeworks', CourseHomeworks(ref))
+        self.add_resource('assignments', CourseAssignments(ref))
 
 
     def populate(self, soup, session):
