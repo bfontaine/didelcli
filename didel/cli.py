@@ -31,6 +31,16 @@ class DidelCli(object):
         return Student(username, passwd)
 
 
+    def get_course(self, code):
+        """
+        Shortcut for ``self.get_student().get_course(code)``
+        """
+        s = self.get_student()
+        if not s:
+            return None
+        return s.get_course(code)
+
+
     def print_version(self):
         print("DidelCli v%s -- github.com/bfontaine/didelcli" % __version__)
 
@@ -71,7 +81,7 @@ class DidelCli(object):
         """
         value = self.config.get(key)
         if value is None:
-            return 1
+            return False
         print(value)
 
 
@@ -100,8 +110,8 @@ class DidelCli(object):
         """
         s = self.get_student()
         if not s:
-            return 1
-        print("%s %s (%s)" % (s.firstname, s.lastname, s.username))
+            return False
+        print("%s %s (%s)\n" % (s.firstname, s.lastname, s.username))
         print("Student number: %s" % s.code)
         for key in ('email', 'phone', 'skype'):
             value = getattr(s, key, None)
@@ -114,12 +124,31 @@ class DidelCli(object):
         """
         Show some infos about a course
         """
-        s = self.get_student()
-        if not s:
-            return 1
-        course = s.get_course(code)
+        course = self.get_course(code)
+        if not course:
+            return False
         print("%s (%s)\n" % (course.title, course.teacher))
         print(course.about)
+
+
+    def action_courses_enroll(self, code, key=None):
+        """
+        Enroll in a course.
+        """
+        course = self.get_course(code)
+        if not course:
+            return False
+        return course.enroll(key=key)
+
+
+    def action_courses_unenroll(self, code):
+        """
+        Unenroll from a course.
+        """
+        course = self.get_course(code)
+        if not course:
+            return False
+        return course.unenroll()
 
 
     def run(self):
@@ -172,7 +201,7 @@ class DidelCli(object):
                 args.append('[<%s...>]' % spec.varargs)
 
             print("Usage:\n\t%s %s %s" % (self.exe, action, ' '.join(args)))
-            return 1
+            return False
 
         return fun(*argv)
 
@@ -182,5 +211,5 @@ def run():
     """
     Start the command-line app
     """
-    ret = DidelCli(argv).run() or 0
-    exit(ret)
+    ret = DidelCli(argv).run()
+    exit(1) if ret is None or ret == False else exit(0)
