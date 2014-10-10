@@ -70,6 +70,21 @@ Se désinscrire d’un cours : `didel courses:unenroll <code>`
 
     $ didel courses:unenroll PSYN9
 
+Lister les devoirs à rendre d’un cours : `didel assignments:list <code>`
+
+    $ didel assignments:list M2T2INFOEMB
+    1) Rendu intermédiaire du TP N°1 (Vendredi 03 Octobre 2014 à 14:00)
+    2) TP N°1 (Jeudi 16 Octobre 2014 à 23:59)
+
+Obtenir des informations sur un devoir en particulier : `didel assignments:show <code> <indice>`
+
+    $ didel assignments:show M2T2INFOEMB 1
+    Rendu intermédiaire du TP N°1
+    Vendredi 03 Octobre 2014 à 11:14 -> Vendredi 03 Octobre 2014 à 14:00
+    Type: Fichier (fichier requis, description du fichier facultative)
+    Visibility: Visible uniquement par le(s) gestionnaire(s) et le(s) propriétaire(s)
+    Work Type: Individuel
+
 
 ### Profil
 
