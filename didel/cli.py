@@ -157,7 +157,9 @@ class DidelCli(object):
         List a course's assignments
         """
         course = self.get_course(course_code)
-        for i, asg in enumerate(course.assignments):
+        for i in range(len(course.assignments)):
+            # 'for ag in course.assignments' isn't supported for now
+            asg = course.assignments[i]
             idx = i + 1  # start indexes at 1
             print("%d) %s (%s)" % (idx, asg.title, asg.end))
 
@@ -175,8 +177,8 @@ class DidelCli(object):
         print(a.title)
         print("%s -> %s" % (a.begin, a.end))
         print("Type: %s" % a.submission_type)
-        print("Visibility: %s", a.visibility)
-        print("Work Type: %s", a.work_type)
+        print("Visibility: %s" % a.visibility)
+        print("Work Type: %s" % a.work_type)
 
 
     def action_assignments_submit(self, course_code, index, title, filename):
