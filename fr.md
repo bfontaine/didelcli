@@ -61,14 +61,26 @@ Obtenir des informations sur un cours : `didel courses:show <code>`
 
     Visitez très régulièrement le blog du cours : didiode.fr.
 
+S’inscrire à un cours : `didel courses:enroll <code> [<clef>]`
+
+    $ didel courses:enroll M2MOX
+    # Certains cours nécessitent une clef pour s’inscrire
+    $ didel courses:enroll PSYN9 topsecret
+
+Se désinscrire d’un cours : `didel courses:unenroll <code>`
+
+    $ didel courses:unenroll PSYN9
+
+
 ### Profil
 
 Obtenir des informations sur votre profil DidEL : `didel profile:show`
 
     $ didel profile:show
     Alice Tappart (atappa42)
+
     Student number: 2190041X
-    Email: alice.tappart@etu.univ-paris-diderot.fr
+    Email: alice.tappart@demo.univ-paris-diderot.fr
 
 ## Contribuer
 
