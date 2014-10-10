@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 
+import inspect
 from getpass import getpass
 from sys import argv, exit
 
@@ -10,18 +11,6 @@ from didel.config import DidelConfig
 from didel.student import Student
 
 HELP_FLAGS = ('-h', '-help', '--help')
-
-
-def get_args(fun):
-    """
-    Get a list of the arguments of a function
-    """
-    # http://stackoverflow.com/a/4051447/735926
-    try:
-        code = fun.func_code
-    except AttributeError:  # Python 3
-        code = fun.__code__
-    return code.co_varnames[:code.co_argcount]
 
 
 class DidelCli(object):
@@ -64,7 +53,7 @@ class DidelCli(object):
         Print an help text for a subcommand
         """
         params = map(lambda s: '<%s>' % s, params)
-        print("Usage:\n\t%s %s %s\n" % (self.exe, action, " ".join(params)))
+        print("Usage:\n\t%s %s %s\n" % (self.exe, action, params))
         if docstring:
             print("%s\n" % docstring.strip())
 
@@ -139,9 +128,12 @@ class DidelCli(object):
         the situation.
         """
         # We're using a custom parser here to handle subcommands.
-        if len(self.argv) == 0:
+        argv = self.argv
+        argc = len(argv)
+        if argc == 0:
             return self.print_help()
-        action = self.argv.pop(0)
+        action = argv.pop(0)
+        argc -= 1
         if action in HELP_FLAGS:
             self.print_version()
             return self.print_help()
@@ -158,15 +150,31 @@ class DidelCli(object):
             print("Unrecognized action '%s'" % action)
             return self.print_help()
 
-        mth = getattr(self, name)
-        argv = self.argv
-        argc = len(argv)
-        params = get_args(mth)[1:]  # remove 'self'
+        fun = getattr(self, name)
 
-        if argc != len(params) or (argc > 0 and argv[0] in HELP_FLAGS):
-            return self.print_action_help(action, params, mth.__doc__)
+        spec = inspect.getargspec(fun)
+        # skip 'self'
+        spec_args = (spec.args or ())[1:]
+        spec_defaults = (spec.defaults or ())[1:]
+        defaults_len = len(spec_defaults)
+        required_len = len(spec_args) - defaults_len
+        defaults = list(reversed(spec_args))[:defaults_len]
 
-        return mth(*argv)
+        if argc < required_len or (argc > 0 and argv[0] in HELP_FLAGS):
+            args = []
+            for arg in spec_args:
+                fmt = '<%s>'
+                if arg in defaults:
+                    fmt = '[%s]' % fmt
+                args.append(fmt % arg)
+
+            if spec.varargs:
+                args.append('[<%s...>]' % spec.varargs)
+
+            print("Usage:\n\t%s %s %s" % (self.exe, action, ' '.join(args)))
+            return 1
+
+        return fun(*argv)
 
 
 
