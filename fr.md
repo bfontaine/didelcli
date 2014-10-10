@@ -45,12 +45,6 @@ est stocké de façon chiffrée en local et ne quittera pas votre ordinateur (en
 dehors de la connexion à DidEL). Cette opération n’est nécessaire que la
 première fois.
 
-## Comment ça marche ?
-
-DidEL n’a pas d’[API][api-wp], donc l’outil ne fait que reproduire le
-comportement d’un utilisateur normal : il se connecte et parcours les pages,
-récupérant les informations depuis celles-ci.
-
 ### Cours
 
 Obtenir des informations sur un cours : `didel courses:show <code>`
@@ -95,6 +89,12 @@ Obtenir des informations sur votre profil DidEL : `didel profile:show`
 
     Student number: 2190041X
     Email: alice.tappart@demo.univ-paris-diderot.fr
+
+## Comment ça marche ?
+
+DidEL n’a pas d’[API][api-wp], donc l’outil ne fait que reproduire le
+comportement d’un utilisateur normal : il se connecte et parcours les pages,
+récupérant les informations depuis celles-ci.
 
 ## Contribuer
 
