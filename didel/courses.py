@@ -122,14 +122,20 @@ class Course(CoursePage):
             self.about = about[0].get_text().strip()
 
 
-    def enroll(self):
+    def enroll(self, key=None):
         """
-        Enroll the current student in this course
+        Enroll the current student in this course. Some courses require a key
+        to enroll, give it as ``key``.
         """
         path = '/claroline/auth/courses.php'
-        text = u'Vous êtes désormais inscrit'
+        ok_text = u'Vous êtes désormais inscrit'
         params = {'cmd': 'exReg', 'course': self.ref}
-        return self.session.get_ensure_text(path, text, params=params)
+        if not key:
+            return self.session.get_ensure_text(path, ok_text, params=params)
+        data = params.copy()
+        data['registrationKey'] = 'scade'
+        resp = self.session.post(path, params=params, data=data)
+        return resp.ok and ok_text in resp.text
 
 
     def unenroll(self):
