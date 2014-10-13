@@ -1,3 +1,7 @@
+v0.1.1, (upcoming version) -- Python 2.6 support
+
+* Python 2.6 support fixed
+
 v0.1.0, 2014-10-13 -- Initial release
 
 * Student connection
