@@ -8,5 +8,4 @@ requests==2.4.2
 responses==0.2.2
 six==1.8.0
 tox==1.8.0
-virtualenv==1.11.6
 wsgiref==0.1.2
