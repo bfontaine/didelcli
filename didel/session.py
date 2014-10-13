@@ -2,7 +2,7 @@
 
 from bs4 import BeautifulSoup
 from cookielib import LWPCookieJar
-from os.path import expanduser, isfile
+from os.path import expanduser
 from requests import Session as BaseSession
 
 from didel.base import ROOT_URL
@@ -76,16 +76,22 @@ class Session(BaseSession):
         """
         Save the session
         """
-        if self.cookies_file is not None:
+        try:
             self.cookies.save()
+        except:
+            return False
+        return True
 
 
     def load(self):
         """
         Load a previously saved session
         """
-        if isfile(self.cookies_file):
+        try:
             self.cookies.load()
+        except:
+            return False
+        return True
 
 
     def login(self, username, passwd):
