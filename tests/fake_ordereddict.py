@@ -1,5 +1,8 @@
 # -*- coding: UTF-8 -*-
-from collections import OrderedDict as _OrderedDict
+try:
+    from collections import OrderedDict as _OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict as _OrderedDict
 
 class OrderedDict(_OrderedDict):
 
