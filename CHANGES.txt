@@ -1,6 +1,16 @@
 v0.1.1, (upcoming version) -- Python 2.6 support
 
-* Python 2.6 support fixed
+General changes:
+
+* Python 2.6 and 3.x support fixed
+
+Python API:
+
+* Internal exceptions are now of the class ``DidelError`` instead of
+  ``Exception``
+* ``DidelEntity#fetch`` method now properly handle objects with no ``path``
+* ``Session#load`` and ``Session#save`` return a boolean indicating their
+  success
 
 v0.1.0, 2014-10-13 -- Initial release
 
