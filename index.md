@@ -19,7 +19,7 @@ University's online courses system, [DidEL][didel-web]. It allows you to :
 * get a course's infos
 * (un)enroll in a course
 
-This page is [available in French](fr.html).
+This page is [available in French](fr.html). This is a work in progress.
 
 ## Install
 
