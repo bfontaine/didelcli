@@ -1,9 +1,13 @@
 # -*- coding: UTF-8 -*-
 
 from bs4 import BeautifulSoup
-from cookielib import LWPCookieJar
 from os.path import expanduser
 from requests import Session as BaseSession
+
+try:
+    from cookielib import LWPCookieJar
+except ImportError:  # Python 3
+    from http.cookiejar import LWPCookieJar
 
 from didel.base import ROOT_URL
 
