@@ -6,11 +6,16 @@ General changes:
 
 Python API:
 
-* Internal exceptions are now of the class ``DidelError`` instead of
-  ``Exception``
-* ``DidelEntity#fetch`` method now properly handle objects with no ``path``
-* ``Session#load`` and ``Session#save`` return a boolean indicating their
-  success
+* Internal exceptions are now of the class `DidelError` instead of `Exception`
+* `DidelEntity#fetch` method now properly handle objects with no `path`
+* `Session#load` and `Session#save` return a boolean indicating their success
+* Some classes are imported in `__init__`, making them available with a shorter
+  form:
+      from didel import Student
+  instead of:
+      from didel.student import Student
+  These classes are: `Course`, `CourseAssignment`, `CourseAssignments`,
+  `Session`, and `Student`.
 
 v0.1.0, 2014-10-13 -- Initial release
 
