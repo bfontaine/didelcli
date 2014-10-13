@@ -9,6 +9,13 @@ from bs4 import BeautifulSoup
 
 ROOT_URL = 'http://didel.script.univ-paris-diderot.fr'
 
+class DidelError(Exception):
+    """
+    Base exception for Didel errors
+    """
+
+    pass
+
 
 class DidelEntity(object):
     """
@@ -46,14 +53,12 @@ class DidelEntity(object):
         It sets ``self.session`` to the given session and ``self._populated``
         to ``True``.
         """
-        populate = getattr(self, 'populate', None)
-        if not populate or self.is_populated():
+        if not hasattr(self, 'populate') or self.is_populated():
             return False
 
-        path = getattr(self, 'path', None)
-        if not path:
+        if not hasattr(self, 'path'):
             return False
-        url = urljoin(ROOT_URL, path)
+        url = urljoin(ROOT_URL, self.path)
         resp = session.get(url)
         if not resp.ok:
             return False
@@ -61,8 +66,9 @@ class DidelEntity(object):
         soup = BeautifulSoup(resp.text, 'lxml')
 
         setattr(self, 'session', session)
-        populate(soup, session)
+        self.populate(soup, session)
         setattr(self, '_populated', True)
+        return True
 
 
     def populate(self, soup, session, **kwargs):
@@ -96,7 +102,7 @@ class DidelEntity(object):
             raise TypeError("'%s' has not attribute '%s'" % (self, name))
 
         if not self.is_populated():
-            raise Exception('%s is not populated' % repr(self))
+            raise DidelError('%s is not populated' % repr(self))
 
         res = self._resources[name]
         res.fetch(self.session)
