@@ -99,7 +99,7 @@ class DidelEntity(object):
         Lazily populate subresources when they're acceded
         """
         if name not in self._resources:
-            raise TypeError("'%s' has no attribute '%s'" % (self, name))
+            raise AttributeError("'%s' has no attribute '%s'" % (self, name))
 
         if not self.is_populated():
             raise DidelError('%s is not populated' % repr(self))
