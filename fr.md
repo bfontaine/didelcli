@@ -19,7 +19,8 @@ son but. Il permet pour le moment :
 * d’obtenir des informations sur un cours à partir de son code
 * de s’inscrire/se désinscrire d’un cours
 
-Il n’a rien d’officiel, n’est pas développé ni supporté par l’Université.
+Il n’a rien d’officiel, n’est pas développé ni supporté par l’Université. Il
+est pour l’instant complètement expérimental.
 
 Note : Cette page est [disponible en anglais](index.html).
 
@@ -70,7 +71,8 @@ Lister les devoirs à rendre d’un cours : `didel assignments:list <code>`
     1) Rendu intermédiaire du TP N°1 (Vendredi 03 Octobre 2014 à 14:00)
     2) TP N°1 (Jeudi 16 Octobre 2014 à 23:59)
 
-Obtenir des informations sur un devoir en particulier : `didel assignments:show <code> <indice>`
+Obtenir des informations sur un devoir en particulier :    
+`didel assignments:show <code> <indice>`
 
     $ didel assignments:show M2T2INFOEMB 1
     Rendu intermédiaire du TP N°1
@@ -78,6 +80,11 @@ Obtenir des informations sur un devoir en particulier : `didel assignments:show 
     Type: Fichier (fichier requis, description du fichier facultative)
     Visibility: Visible uniquement par le(s) gestionnaire(s) et le(s) propriétaire(s)
     Work Type: Individuel
+
+Soumettre un devoir sous forme de fichier :    
+`didel assignments:submit <code> <indice> <titre> <fichier>`
+
+    $ didel assignments:submit M2T2INFOEMB 1 "TP 1 WIP" mon/tp1.tgz
 
 
 ### Profil
@@ -89,6 +96,20 @@ Obtenir des informations sur votre profil DidEL : `didel profile:show`
 
     Student number: 2190041X
     Email: alice.tappart@demo.univ-paris-diderot.fr
+
+## Module Python
+
+L’outil `didel` en ligne de commande n’est qu’une interface pour le module
+Python du même nom, qui permet de faire toutes les opérations décrites
+ci-dessus via un programme Python. Par exemple :
+
+    >>> from didel.student import Student
+    >>> s = Student("toto42", password="topsecret")
+    >>> io2 = s.get_course("io2")
+    >>> io2.title
+    Internet & Outils
+    >>> io2.enroll()
+    True
 
 ## Comment ça marche ?
 
