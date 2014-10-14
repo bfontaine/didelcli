@@ -99,7 +99,7 @@ class Session(BaseSession):
         return True
 
 
-    def login(self, username, passwd):
+    def login(self, username, passwd, save=True):
         """
         Authenticate an user
         """
@@ -119,7 +119,9 @@ class Session(BaseSession):
             '_eventId': 'submit',
         }
         resp = self.post(url, params=params, data=data)
-        return resp.ok and 'Log In Successful' in resp.text
+        ret = resp.ok and 'Log In Successful' in resp.text
+        if ret and save:
+            self.save()
 
 
     def logout(self):
@@ -133,7 +135,3 @@ class Session(BaseSession):
         """
         resp = self.get(url, *args, **kw)
         return resp.ok and text in resp.text
-
-
-    def __del__(self):
-        self.save()
