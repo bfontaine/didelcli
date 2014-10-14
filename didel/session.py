@@ -81,7 +81,8 @@ class Session(BaseSession):
         Save the session
         """
         try:
-            self.cookies.save()
+            self.cookies.save(ignore_discard=True, ignore_expires=True)
+            # TODO chmod it to disable group/others access
         except:
             return False
         return True
