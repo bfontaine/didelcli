@@ -10,7 +10,7 @@ else:
 from os import remove
 from tempfile import NamedTemporaryFile
 
-from bs4 import BeautifulSoup
+import requests
 import responses
 
 from didel.session import Session, URLS, ROOT_URL
@@ -70,6 +70,9 @@ class TestSession(unittest.TestCase):
         self.assertIn('headers', kwargs)
         self.assertEquals(ua, kwargs['headers']['User-Agent'])
 
+
+    # .get_url
+
     def test_get_absolute_url(self):
         url = 'http://example.com'
         s = FakeSession()
@@ -85,8 +88,39 @@ class TestSession(unittest.TestCase):
         s = FakeSession()
         self.assertEquals('%s%s' % (ROOT_URL, url), s.get_url(url))
 
-    # TODO: get
-    # TODO: post
+
+    # .get
+
+    @responses.activate
+    def test_get_requests_object(self):
+        url = 'http://www.example.com/foo'
+        body = "okx&Asq'"
+        responses.add(responses.GET, url, body=body, status=200)
+        s = FakeSession()
+        resp = s.get(url)
+        self.assertEquals(1, len(responses.calls))
+        self.assertIsInstance(resp, requests.Response)
+
+    @responses.activate
+    def test_get_set_default_ua(self):
+        url = 'http://www.example.com/foo'
+        responses.add(responses.GET, url, body='ok', status=200)
+        FakeSession().get(url)
+        self.assertEquals(1, len(responses.calls))
+        self.assertIn('User-Agent', responses.calls[0].request.headers)
+
+    @responses.activate
+    def test_post_requests_object(self):
+        url = 'http://www.example.com/foo'
+        body = "okx&Asq'"
+        responses.add(responses.POST, url, body=body, status=200)
+        s = FakeSession()
+        resp = s.post(url)
+        self.assertEquals(1, len(responses.calls))
+        self.assertIsInstance(resp, requests.Response)
+
+
+    # .save
 
     def test_save_false_on_error(self):
         s = FakeSession(cookies_file='/th/is/pa/t/h/does/n/t/exist')
