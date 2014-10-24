@@ -20,6 +20,17 @@ Python API:
 Command line:
 
 * `courses:show <code>` added to open a course's page in the browser
+* `courses:alias <alias> <code>` added. It allows one to set an alias for each
+  course:
+    $ didel courses:show M2T2INFOEMB       # course code, hard to remember
+    blah blah
+    $ didel courses:show emb               # this one doesn't exist
+    <error>
+    $ didel courses:alias emb M2T2INFOEMB  # alias it to a shorter name
+    $ didel courses:show emb               # easier to remember
+    blah blah
+  Aliases are stored in the configuration file, which makes them easy to edit
+  with your text editor.
 
 v0.1.0, 2014-10-13 -- Initial release
 
