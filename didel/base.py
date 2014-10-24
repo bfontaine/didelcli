@@ -46,6 +46,13 @@ class DidelEntity(object):
         self._resources = {}
 
 
+    def url(self):
+        """
+        Return this entity's URL
+        """
+        return urljoin(ROOT_URL, self.path)
+
+
     def fetch(self, session):
         """
         Fetch ``self.path`` using the given session and call ``self.populate``
@@ -58,7 +65,7 @@ class DidelEntity(object):
 
         if not hasattr(self, 'path'):
             return False
-        url = urljoin(ROOT_URL, self.path)
+        url = self.url()
         resp = session.get(url)
         if not resp.ok:
             return False

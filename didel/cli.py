@@ -152,6 +152,17 @@ class DidelCli(object):
         return course.unenroll()
 
 
+    def action_courses_open(self, code):
+        """
+        Open a course's page in a browser
+        """
+        course = self.get_course(code)
+        if not course:
+            return False
+        import webbrowser
+        webbrowser.open(course.url())
+
+
     def action_assignments_list(self, course_code):
         """
         List a course's assignments

@@ -41,10 +41,15 @@ class TestBase(unittest.TestCase):
     def tearDown(self):
         DidelEntity.populate = self._DidelEntity_populate
 
-
     def test_base_entity_should_not_be_populated(self):
         e = DidelEntity()
         self.assertFalse(e.is_populated())
+
+    def test_base_url(self):
+        path = 'xzrd1d$z9'
+        e = DidelEntity()
+        e.path = path
+        self.assertEquals(self.url(path), e.url())
 
     def test_trying_to_access_subresource_fails_if_not_populated(self):
         e = DidelEntity()

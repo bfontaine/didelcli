@@ -17,6 +17,10 @@ Python API:
   These classes are: `Course`, `CourseAssignment`, `CourseAssignments`,
   `Session`, and `Student`.
 
+Command line:
+
+* `courses:show <code>` added to open a course's page in the browser
+
 v0.1.0, 2014-10-13 -- Initial release
 
 * Student connection
