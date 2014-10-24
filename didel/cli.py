@@ -39,6 +39,7 @@ class DidelCli(object):
         s = self.get_student()
         if not s:
             return None
+        code = self.config.get('alias.%s' % code, code)
         return s.get_course(code)
 
 
@@ -161,6 +162,13 @@ class DidelCli(object):
             return False
         import webbrowser
         webbrowser.open(course.url())
+
+
+    def action_courses_alias(self, alias, code):
+        """
+        Add an alias for a course
+        """
+        self.config.set('alias.%s' % alias, code, save=True)
 
 
     def action_assignments_list(self, course_code):

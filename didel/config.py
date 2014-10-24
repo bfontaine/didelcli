@@ -82,15 +82,19 @@ class DidelConfig(object):
         return self
 
 
-    def get(self, key):
+    def get(self, key, default=None):
         """
-        Get a value. It returns ``None`` if it doesn't exist.
+        Get a value. It returns ``default`` if it doesn't exist.
 
         >>> config.get("foo.bar")
         "42"
+        >>> config.get("dontexist")
+        None
+        >>> config.get("dontexist", "foo")
+        "foo"
         """
         if not self.has_key(key):
-            return None
+            return default
         section, key = self._split_path(key)
         return self.config.get(section, key)
 
