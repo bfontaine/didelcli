@@ -43,7 +43,7 @@ class DidelCli(object):
 
 
     def print_version(self):
-        print("DidelCli v%s -- github.com/bfontaine/didelcli" % __version__)
+        print("DidelCli v%s -- http://git.io/didelcli" % __version__)
 
 
     def print_help(self):
