@@ -10,14 +10,15 @@ class Student(DidelEntity):
     A virtual student, i.e. a DidEL session
     """
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, autofetch=True):
         super(Student, self).__init__()
         self.session = Session()
         self.username = username
         self.path = '/claroline/auth/profile.php'
         self._courses = {}  # cache
         self.session.login(self.username, password)
-        self.fetch(self.session)
+        if autofetch:
+            self.fetch(self.session)
 
 
     def populate(self, soup, *args, **kw):

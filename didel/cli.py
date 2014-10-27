@@ -22,25 +22,26 @@ class DidelCli(object):
         self.config = DidelConfig.get_default()
 
 
-    def get_student(self):
+    def get_student(self, fetchInfos=False):
         username = self.config.get_secret('username')
         passwd = self.config.get_secret('password')
         if username is None or passwd is None:
             print("Configure your login credentials with" \
                   " '%s login:init <username>'" % self.exe)
             return None
-        return Student(username, passwd)
+        return Student(username, passwd, autofetch=fetchInfos)
 
 
-    def get_course(self, code):
+    def get_course(self, code, student=None):
         """
         Shortcut for ``self.get_student().get_course(code)``
         """
-        s = self.get_student()
-        if not s:
+        if student is None:
+            student = self.get_student()
+        if not student:
             return None
         code = self.config.get('alias.%s' % code, code)
-        return s.get_course(code)
+        return student.get_course(code)
 
 
     def print_version(self):
@@ -110,7 +111,7 @@ class DidelCli(object):
         """
         Show some info about your profile
         """
-        s = self.get_student()
+        s = self.get_student(fetchInfos=True)
         if not s:
             return False
         print("%s %s (%s)\n" % (s.firstname, s.lastname, s.username))
@@ -209,7 +210,7 @@ class DidelCli(object):
         s = self.get_student()
         if not s:
             return False
-        course = s.get_course(course_code)
+        course = self.get_course(course_code, s)
         a = course.assignments[index - 1]  # indexes start at 1
         with open(expanduser(filename), 'rb') as f:
             return a.submit(s, title, f)
