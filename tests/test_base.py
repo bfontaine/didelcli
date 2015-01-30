@@ -34,7 +34,7 @@ class TestBase(unittest.TestCase):
         return urljoin(ROOT_URL, path)
 
     def setUp(self):
-        self.session = Session(cookies_file=None)
+        self.session = Session()
         self.soup = BeautifulSoup('')
         self._DidelEntity_populate = DidelEntity.populate
 

@@ -26,8 +26,8 @@ DEFAULTS = {
 
 class Session(BaseSession):
     """
-    A session with persistent cookies storage and builtin authentification
-    support for Paris Diderot's websites as well as custom default headers.
+    A session with built-in authentification support for Paris Diderot's
+    websites as well as custom default headers.
     """
 
     def __init__(self, *args, **kwargs):
