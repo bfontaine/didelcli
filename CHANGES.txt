@@ -1,3 +1,16 @@
+v0.1.2 (upcoming version)
+
+General changes:
+
+* ~/.netrc support
+
+Python API:
+
+* `DidelConfig#get_credentials` added, which returns a pair of `username` and
+  `password` for the current configuration, or fallback on `~/.netrc` if it
+  can.
+
+
 v0.1.1, 2015-01-31 -- Python 2.6 support
 
 General changes:
