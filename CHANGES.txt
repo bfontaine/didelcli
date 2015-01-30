@@ -3,13 +3,12 @@ v0.1.1, (upcoming version) -- Python 2.6 support
 General changes:
 
 * Python 2.6 and 3.x support fixed
-* Cookies are not saved anymore between sessions
+* Persistent Cookies (broken) support removed
 
 Python API:
 
 * Internal exceptions are now of the class `DidelError` instead of `Exception`
 * `DidelEntity#fetch` method now properly handle objects with no `path`
-* `Session#load` and `Session#save` return a boolean indicating their success
 * Some classes are imported in `__init__`, making them available with a shorter
   form:
       from didel import Student
