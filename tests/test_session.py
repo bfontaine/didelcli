@@ -14,10 +14,6 @@ from didel.session import Session, URLS, ROOT_URL
 
 class TestSession(unittest.TestCase):
 
-    def test_session_is_loaded_on_init(self):
-        s = Session()
-        self.assertTrue(getattr(s, '_test_load_called', False))
-
     def test_ua_set_on_init(self):
         ua = 'th+is/an user 4gent'
         s = Session(user_agent=ua)
