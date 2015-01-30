@@ -1,9 +1,9 @@
-v0.1.1, (upcoming version) -- Python 2.6 support
+v0.1.1, 2015-01-31 -- Python 2.6 support
 
 General changes:
 
 * Python 2.6 and 3.x support fixed
-* Persistent Cookies (broken) support removed
+* Persistent cookies (broken) support removed
 
 Python API:
 
