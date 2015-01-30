@@ -23,8 +23,7 @@ class DidelCli(object):
 
 
     def get_student(self, fetchInfos=False):
-        username = self.config.get_secret('username')
-        passwd = self.config.get_secret('password')
+        username, passwd = self.config.get_credentials()
         if username is None or passwd is None:
             print("Configure your login credentials with" \
                   " '%s login:init <username>'" % self.exe)

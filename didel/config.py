@@ -142,6 +142,49 @@ class DidelConfig(object):
         return self.has_key(key)
 
 
+    def get_credentials(self):
+        """
+        Return a pair of "username" and "password" keys. This is roughly the
+        same as the following code: ::
+
+            (cfg.get_secret('username'), cfg.get_secret('password'))
+
+        Except that it can try various fallbacks if one of them is ``None``
+        (i.e. the credentials weren't properly configured).
+        """
+        username = self.get_secret('username')
+        passwd = self.get_secret('password')
+        if username is None or passwd is None:
+            return self._get_netrc_credentials()
+        return (username, passwd)
+
+
+    def _get_netrc_credentials(self):
+        """
+        Fallback of ``get_credentials`` if credentials weren't configured.
+        """
+        from netrc import NetrcParseError, netrc as NetrcFile
+        source = None
+        try:
+            source = NetrcFile()
+        except NetrcParseError:
+            return (None, None)
+
+        hosts = [
+            'didel.script.univ-paris-diderot.fr',
+            'auth.univ-paris-diderot.fr',
+            'univ-paris-diderot.fr',
+        ]
+
+        for host in hosts:
+            res = source.authenticators(host)
+            if res:
+                login, _, password = res
+                return (login, password)
+
+        return (None, None)
+
+
     def items(self):
         """
         Yield all items from this config, as tuples of ``(key, value)``
