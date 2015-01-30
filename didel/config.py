@@ -57,7 +57,10 @@ class DidelConfig(object):
     def save(self):
         with open(self.filename, 'w') as f:
             self.config.write(f)
-        chmod(self.filename, 0600)
+        # octal numbers are written as '0600' in Python2 and '0o600' in Python3
+        # to avoid any problem we're writing the permissions as a decimal
+        # number here
+        chmod(self.filename, 384)
 
 
     def _split_path(self, key):
