@@ -3,6 +3,7 @@ v0.1.1, (upcoming version) -- Python 2.6 support
 General changes:
 
 * Python 2.6 and 3.x support fixed
+* Cookies are not saved anymore between sessions
 
 Python API:
 
@@ -16,6 +17,8 @@ Python API:
       from didel.student import Student
   These classes are: `Course`, `CourseAssignment`, `CourseAssignments`,
   `Session`, and `Student`.
+* `Student#login`’s `save` optional argument removed
+* `Session#save` and `Session#load` removed
 
 Command line:
 

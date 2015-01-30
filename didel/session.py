@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 
 from bs4 import BeautifulSoup
-from os.path import expanduser
 from requests import Session as BaseSession
 
 try:
@@ -21,7 +20,6 @@ URLS = {
 }
 
 DEFAULTS = {
-    'cookies_file': expanduser('~/.didel.cookies'),
     'user_agent': 'Python/DidelCli +b@ptistefontaine.fr',
 }
 
@@ -40,8 +38,7 @@ class Session(BaseSession):
         for k, v in DEFAULTS.items():
             setattr(self, k, kwargs.pop(k) if k in kwargs else v)
         super(Session, self).__init__(*args, **kwargs)
-        self.cookies = LWPCookieJar(self.cookies_file)
-        self.load()
+        self.cookies = LWPCookieJar()
 
 
     def _set_header_defaults(self, kwargs):
@@ -76,30 +73,7 @@ class Session(BaseSession):
         return super(Session, self).post(url, *args, **kwargs)
 
 
-    def save(self):
-        """
-        Save the session
-        """
-        try:
-            self.cookies.save(ignore_discard=True, ignore_expires=True)
-            # TODO chmod it to disable group/others access
-        except:
-            return False
-        return True
-
-
-    def load(self):
-        """
-        Load a previously saved session
-        """
-        try:
-            self.cookies.load()
-        except:
-            return False
-        return True
-
-
-    def login(self, username, passwd, save=True):
+    def login(self, username, passwd):
         """
         Authenticate an user
         """
@@ -119,9 +93,7 @@ class Session(BaseSession):
             '_eventId': 'submit',
         }
         resp = self.post(url, params=params, data=data)
-        ret = resp.ok and 'Log In Successful' in resp.text
-        if ret and save:
-            self.save()
+        return resp.ok and 'Log In Successful' in resp.text
 
 
     def logout(self):
