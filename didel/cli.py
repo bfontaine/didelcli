@@ -22,7 +22,6 @@ class DidelCli(object):
         self.exe = self.argv.pop(0)
         self.config = DidelConfig.get_default()
 
-
     def get_student(self, fetchInfos=False):
         username, passwd = self.config.get_credentials()
         if username is None or passwd is None:
@@ -214,6 +213,56 @@ class DidelCli(object):
         a = course.assignments[index - 1]  # indexes start at 1
         with open(expanduser(filename), 'rb') as f:
             return a.submit(s, title, f)
+
+
+    def action_pull(self):
+        """
+        Download `documents et liens` files and folders of each course 
+        followed by a student using path defined in SOURCE_FILE (cf config.py). 
+        """
+        student = self.get_student() # check if student is initialized in `SOURCE_FILE`
+        path = self.config.get("Courses.path")
+        if path is None:
+            print("Configure your path to pull with" \
+                  " '%s pull:save <path>'" % self.exe)
+            return None
+        print("pull to %s" % path)
+        all_courses = student.get_all_courses()
+        for course in all_courses:
+            course.docs_and_links(path)
+
+
+    def action_pull_save(self, path):
+        """
+        Define path of folder where we will download files with action_pull
+        """
+        self.config.set("Courses.path", path, True)
+        self.action_pull()
+
+
+    def action_pull(self):
+        """
+        Download `documents et liens` files and folders of each course 
+        followed by a student using path defined in SOURCE_FILE (cf config.py). 
+        """
+        student = self.get_student() # check if student is initialized in `SOURCE_FILE`
+        path = self.config.get("Courses.path")
+        if path is None:
+            print("Configure your path to pull with" \
+                  " '%s pull:save <path>'" % self.exe)
+            return None
+        print("pull to %s" % path)
+        all_courses = student.get_all_courses()
+        for course in all_courses:
+            course.docs_and_links(path)
+
+
+    def action_pull_save(self, path):
+        """
+        Define path of folder where we will download files with action_pull
+        """
+        self.config.set("Courses.path", path, True)
+        self.action_pull()
 
 
     def run(self):

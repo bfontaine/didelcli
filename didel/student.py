@@ -5,19 +5,6 @@ from didel.courses import Course
 from didel.session import Session
 from didel.exceptions import DidelLoginRequired
 
-def login_required(mth):
-    """
-    An internal decorator to ensure a ``Student`` method is never called with a
-    disconnected session.
-    """
-    def _mth(self, *args, **kw):
-        if not self.logged:
-            raise DidelLoginRequired()
-        return self.mth(*args, **kw)
-    _mth.__name__ = mth.__name__
-    return _mth
-
-
 class Student(DidelEntity):
     """
     A virtual student, i.e. a DidEL session
@@ -33,9 +20,9 @@ class Student(DidelEntity):
         if autofetch:
             self.fetch(self.session)
 
-
-    @login_required
     def populate(self, soup, *args, **kw):
+        if not self.logged:
+            raise DidelLoginRequired()
         aliases = {'officialCode': 'code', 'uidToEdit': 'auth_id'}
         for attr in ('firstname', 'lastname', 'officialCode', 'username',
                 'email', 'phone', 'skype', 'uidToEdit'):
@@ -44,13 +31,45 @@ class Student(DidelEntity):
             setattr(self, attr, value)
 
 
-    @login_required
     def get_course(self, ref):
         """
         Return a Course object
         """
+        if not self.logged:
+            raise DidelLoginRequired()  
         if not ref in self._courses:
             c = Course(ref, self)
             c.fetch(self.session)
             self._courses[ref] = c
         return self._courses[ref]
+
+
+    def get_all_courses(self):
+        """
+        return all courses
+        """
+        if not self.logged:
+            raise DidelLoginRequired()              
+        sc = StudentCoursesRefs()
+        sc.fetch(self.session)
+        return [self.get_course(ref) for ref in sc.refs]
+
+
+
+class StudentCoursesRefs(DidelEntity):   
+    """
+    didel main page 
+    """
+
+    def __init__(self):
+        super(StudentCoursesRefs, self).__init__()
+        self.path = '/?fromCasServer=true'
+        self.refs = []
+
+
+    def populate(self, soup, *args, **kw):
+        """
+        save references of courses in a list
+        """
+        soup_refs = soup.select("dt a")
+        self.refs = [cours.attrs["href"].split("=")[1] for cours in soup_refs]

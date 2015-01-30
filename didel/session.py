@@ -6,6 +6,7 @@ from requests import Session as BaseSession
 from didel.base import ROOT_URL
 from didel.exceptions import DidelServerError
 
+
 URLS = {
     'login': 'https://auth.univ-paris-diderot.fr/cas/login',
 
@@ -80,7 +81,7 @@ class Session(BaseSession):
             '_eventId': 'submit',
         }
         resp = self.post(url, params=params, data=data)
-        return self.check_response(resp) and 'Log In Successful' in resp.text
+        return self.check_response(resp) and 'Quitter' in resp.text
 
 
     def get_ensure_text(self, url, text, *args, **kw):

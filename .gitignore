@@ -12,6 +12,7 @@ __pycache__
 /dist
 /venv
 /htmlcov
+/didelcli.egg-info
 .tox
 
 _site

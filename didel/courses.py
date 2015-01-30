@@ -7,8 +7,12 @@ try:
 except ImportError:  # Python 3
     from urllib.parse import urlparse, parse_qs
 
-from didel.base import DidelEntity
+from didel.base import DidelEntity, ROOT_URL
 from didel.souputils import parse_homemade_dl
+import re, os, datetime
+
+from time import mktime
+from os import mkdir
 
 class CoursePage(DidelEntity):
     """
@@ -116,10 +120,20 @@ class Course(CoursePage):
         header = soup.select('.courseInfos')[0]
         self.title = header.select('h2 a')[0].get_text()
         self.teacher = header.select('p')[0].get_text().split('\n')[-1].strip()
-
         about = soup.select('#portletAbout')
         if about:
             self.about = about[0].get_text().strip()
+
+
+    def docs_and_links(self, path):
+        """
+        synchronize didel documents with user
+        """
+        if not (os.path.isdir(path)):
+            raise IOError # if the path defined in SOURCE_FILE (cf config.py) isn't available
+        d = DocumentsLinks(self.ref)
+        d.fetch(self.session)
+        d.synchronize(path)
 
 
     def enroll(self, key=None):
@@ -140,9 +154,82 @@ class Course(CoursePage):
 
     def unenroll(self):
         """
-        Unenroll the current student from this course
+        Unenroll the current student from this course.
         """
         path = '/claroline/auth/courses.php'
         text = u'Vous avez été désinscrit'
         params = {'cmd': 'exUnreg', 'course': self.ref}
         return self.session.get_ensure_text(path, text, params=params)
+
+
+class DocumentsLinks(DidelEntity):
+
+    URL_FMT = '/claroline/document/document.php?cidReset=true&cidReq={ref}'
+
+    def __init__(self, ref, path=None):
+        super(DocumentsLinks, self).__init__()
+        self.ressources = {}
+        self.ref = ref
+        if path :
+            self.path = path
+            self.ref = ""            
+        else:
+            self.path = self.URL_FMT.format(ref=ref)
+
+
+    def populate(self, soup, session):
+        """
+        Get all documents and folder of a course.
+        """
+        table = soup.select(".claroTable tbody tr[align=center]")
+        for line in table:
+            cols = line.select("td")
+            item = cols[0].select(".item")[0]
+            name = item.contents[1].strip()
+            date = cols[2].select("small")[0].contents[0].strip()
+            url = cols[0].select("a")[0].attrs["href"].strip()
+            if(re.match(r"^<img (alt=\"\")? src=\"/web/img/folder", str(item.select("img")[0]))) is not None:
+                doc = DocumentsLinks("", url)
+                doc.fetch(self.session)
+                self.add_resource(name, doc)
+            else:
+                self.add_resource(name, Document(name, url, date))
+
+    def timestamp(self, date):
+        return mktime(datetime.datetime.strptime(date, "%d.%m.%Y").timetuple())
+
+ 
+    def synchronize(self, path):
+        """
+        compare files on didel with file in folder,
+            and calling download add or reset files'user
+            only if not exist or older
+        """
+        path = "%s/%s" % (path, self.ref)
+        if not os.path.isdir(path):
+            mkdir(path)
+        for k in self._resources:
+            if(isinstance(self._resources[k], DocumentsLinks)): 
+                self._resources[k].synchronize("%s/%s" % (path, k))
+            else:
+                no_file = not os.path.exists("%s/%s" % (path, k))
+                didel_file = self.timestamp(self._resources[k].date)
+                if no_file or (didel_file > os.stat("%s/%s" % (path, k)).st_mtime):
+                    self.download(self._resources[k], path)
+    
+
+    def download(self, document, path):
+        response = self.session.get(ROOT_URL + document.url)
+        document.path = "%s/%s" % (path, document.name)
+        with open(document.path, 'w') as file:
+            file.write(response.content)
+        
+
+
+class Document(object):
+
+    def __init__(self, name, url, date):
+        self.name = name
+        self.url = url
+        self.date = date
+
