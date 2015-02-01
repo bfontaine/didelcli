@@ -10,7 +10,7 @@ else:
 import requests
 import responses
 
-from didel.session import Session, URLS, ROOT_URL
+from didel.session import Session, ROOT_URL
 
 class TestSession(unittest.TestCase):
 
@@ -63,31 +63,6 @@ class TestSession(unittest.TestCase):
         self.assertIsInstance(resp, requests.Response)
 
     # TODO: login
-
-    @responses.activate
-    def test_logout_false_on_error(self):
-        url = URLS['logout']
-        responses.add(responses.GET, url, body='nope', status=500)
-        s = Session()
-        self.assertFalse(s.logout())
-        self.assertEquals(1, len(responses.calls))
-
-    @responses.activate
-    def test_logout_false_without_match(self):
-        url = URLS['logout']
-        responses.add(responses.GET, url, body='nothing here', status=200)
-        s = Session()
-        self.assertFalse(s.logout())
-        self.assertEquals(1, len(responses.calls))
-
-    @responses.activate
-    def test_logout_true_on_success(self):
-        url = URLS['logout']
-        responses.add(responses.GET, url, body="""
-            Logout successful :) """, status=200)
-        s = Session()
-        self.assertTrue(s.logout())
-        self.assertEquals(1, len(responses.calls))
 
     @responses.activate
     def test_get_ensure_text_false_on_error(self):

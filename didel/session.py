@@ -12,14 +12,13 @@ from didel.base import ROOT_URL
 
 URLS = {
     'login': 'https://auth.univ-paris-diderot.fr/cas/login',
-    'logout': 'https://auth.univ-paris-diderot.fr/cas/logout',
 
     'login_service':
         'http://didel.script.univ-paris-diderot.fr/claroline/auth/login.php' \
         '?authModeReq=CAS',
 }
 
-DEFAULTS = {
+HEADERS = {
     'User-Agent': 'Python/DidelCli +b@ptistefontaine.fr',
 }
 
@@ -32,8 +31,7 @@ class Session(BaseSession):
 
     def __init__(self, *args, **kwargs):
         super(Session, self).__init__(*args, **kwargs)
-        for k, v in DEFAULTS.items():
-            self.headers[k] = v
+        self.headers.update(HEADERS)
         self.cookies = LWPCookieJar()
 
 
@@ -78,10 +76,6 @@ class Session(BaseSession):
         }
         resp = self.post(url, params=params, data=data)
         return resp.ok and 'Log In Successful' in resp.text
-
-
-    def logout(self):
-        return self.get_ensure_text(URLS['logout'], 'Logout successful')
 
 
     def get_ensure_text(self, url, text, *args, **kw):

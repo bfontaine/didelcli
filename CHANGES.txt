@@ -9,6 +9,8 @@ Python API:
 * `DidelConfig#get_credentials` added, which returns a pair of `username` and
   `password` for the current configuration, or fallback on `~/.netrc` if it
   can.
+* `Session#logout` removed. It’s not necessary because cookies are not saved
+  between sessions so just deleting the session object disconnects you
 
 
 v0.1.1, 2015-01-31 -- Python 2.6 support
