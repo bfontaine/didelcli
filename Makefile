@@ -44,8 +44,11 @@ covercheck:
 	$(BINPREFIX)coverage $(COVERAGE_REPORT)
 
 coverhtml:
-	@make COVERAGE_REPORT=html BINPREFIX=$(BINPREFIX) covercheck
+	@$(MAKE) COVERAGE_REPORT=html BINPREFIX=$(BINPREFIX) covercheck
 	@echo '--> open htmlcov/index.html'
+
+stylecheck:
+	$(BINPREFIX)pyflakes didel
 
 dist: deps
 	$(BINPREFIX)python setup.py sdist
