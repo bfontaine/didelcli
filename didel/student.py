@@ -16,7 +16,7 @@ class Student(DidelEntity):
         self.username = username
         self.path = '/claroline/auth/profile.php'
         self._courses = {}  # cache
-        self.session.login(self.username, password)
+        self.logged = self.session.login(self.username, password)
         if autofetch:
             self.fetch(self.session)
 
