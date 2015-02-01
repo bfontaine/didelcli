@@ -5,10 +5,10 @@ SRC=didel
 VENV=./venv
 BINPREFIX=$(VENV)/bin/
 
-PIP=$(BINPREFIX)pip
+PIP      = $(BINPREFIX)pip
+COVERAGE = $(BINPREFIX)coverage
 
 COVERFILE:=.coverage
-COVERAGE_REPORT:=report -m
 
 PY_VERSION:=$(subst ., ,$(shell python --version 2>&1 | cut -d' ' -f2))
 PY_VERSION_MAJOR:=$(word 1,$(PY_VERSION))
@@ -31,6 +31,9 @@ freeze: $(VENV)
 $(VENV):
 	virtualenv $@
 
+clean-dist:
+	$(RM) -r dist
+
 # Tests
 
 check:
@@ -40,17 +43,26 @@ check-versions:
 	$(BINPREFIX)tox
 
 covercheck:
-	$(BINPREFIX)coverage run --source=$(SRC) tests/test.py
-	$(BINPREFIX)coverage $(COVERAGE_REPORT)
-
-coverhtml:
-	@$(MAKE) COVERAGE_REPORT=html BINPREFIX=$(BINPREFIX) covercheck
+	$(COVERAGE) run --source=$(SRC) tests/test.py
+	@# generate the CLI report
+	$(COVERAGE) report -m
+	@echo
+	@# as well as the HTML one
+	$(COVERAGE) html
 	@echo '--> open htmlcov/index.html'
 
 stylecheck:
 	$(BINPREFIX)pyflakes didel
 
-dist: deps
+test-install:
+	@$(MAKE) dist >/dev/null 2>&1 && \
+	$(PIP) install -q dist/didelcli-*.tar.gz && \
+	echo "didelcli has been temporary installed. Type 'exit' to exit the shell." && \
+	bash -i && \
+	echo y | $(PIP) -q uninstall didelcli >/dev/null 2>&1 && \
+	echo "You're back in the parent shell"
+
+dist: deps clean-dist
 	$(BINPREFIX)python setup.py sdist
 
 publish: check-versions
