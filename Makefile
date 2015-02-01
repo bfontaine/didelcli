@@ -54,14 +54,6 @@ covercheck:
 stylecheck:
 	$(BINPREFIX)pyflakes didel
 
-test-install:
-	@$(MAKE) dist >/dev/null 2>&1 && \
-	$(PIP) install -q dist/didelcli-*.tar.gz && \
-	echo "didelcli has been temporary installed. Type 'exit' to exit the shell." && \
-	bash -i && \
-	echo y | $(PIP) -q uninstall didelcli >/dev/null 2>&1 && \
-	echo "You're back in the parent shell"
-
 dist: deps clean-dist
 	$(BINPREFIX)python setup.py sdist
 
