@@ -20,35 +20,21 @@ URLS = {
 }
 
 DEFAULTS = {
-    'user_agent': 'Python/DidelCli +b@ptistefontaine.fr',
+    'User-Agent': 'Python/DidelCli +b@ptistefontaine.fr',
 }
 
 
 class Session(BaseSession):
     """
     A session with built-in authentification support for Paris Diderot's
-    websites as well as custom default headers.
+    websites.
     """
 
     def __init__(self, *args, **kwargs):
-        """
-        Same constructor as parent class except that if ``cookies_file`` is
-        given it'll override the default cookies file.
-        """
-        for k, v in DEFAULTS.items():
-            setattr(self, k, kwargs.pop(k) if k in kwargs else v)
         super(Session, self).__init__(*args, **kwargs)
+        for k, v in DEFAULTS.items():
+            self.headers[k] = v
         self.cookies = LWPCookieJar()
-
-
-    def _set_header_defaults(self, kwargs):
-        """
-        Internal utility to set default headers on get/post requests.
-        """
-        headers = {'User-Agent': self.user_agent}
-        req_headers = kwargs.pop('headers', {})
-        headers.update(req_headers)
-        kwargs['headers'] = headers
 
 
     def get_url(self, url):
@@ -62,13 +48,11 @@ class Session(BaseSession):
 
 
     def get(self, url, *args, **kwargs):
-        self._set_header_defaults(kwargs)
         url = self.get_url(url)
         return super(Session, self).get(url, *args, **kwargs)
 
 
     def post(self, url, *args, **kwargs):
-        self._set_header_defaults(kwargs)
         url = self.get_url(url)
         return super(Session, self).post(url, *args, **kwargs)
 
