@@ -10,6 +10,7 @@ from sys import argv, exit
 from didel import __version__
 from didel.config import DidelConfig
 from didel.student import Student
+from didel.exceptions import DidelLoginRequired, DidelServerError
 
 HELP_FLAGS = ('-h', '-help', '--help')
 
@@ -245,15 +246,16 @@ class DidelCli(object):
 
         fun = getattr(self, name)
 
+        # dynamically check if enough arguments were given on the command line
         spec = inspect.getargspec(fun)
         # skip 'self'
         spec_args = (spec.args or ())[1:]
         spec_defaults = (spec.defaults or ())[1:]
         defaults_len = len(spec_defaults)
         required_len = len(spec_args) - defaults_len
-        defaults = list(reversed(spec_args))[:defaults_len]
 
         if argc < required_len or (argc > 0 and argv[0] in HELP_FLAGS):
+            defaults = list(reversed(spec_args))[:defaults_len]
             args = []
             for arg in spec_args:
                 fmt = '<%s>'
@@ -270,10 +272,25 @@ class DidelCli(object):
         return fun(*argv)
 
 
+def abort(msg, code=1):
+    """
+    Print a message and exit.
+    """
+    print(msg)
+    exit(code)
+
 
 def run():
     """
     Start the command-line app
     """
-    ret = DidelCli(argv).run()
+    try:
+        ret = DidelCli(argv).run()
+    except KeyboardInterrupt:
+        abort("Bye!", 0)
+    except DidelLoginRequired:
+        abort("Error: Login required.")
+    except DidelServerError as e:
+        abort("%s" % e)
+
     exit(1) if ret is None or ret == False else exit(0)

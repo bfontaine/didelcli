@@ -9,6 +9,7 @@ except ImportError:  # Python 3
     from http.cookiejar import LWPCookieJar
 
 from didel.base import ROOT_URL
+from didel.exceptions import DidelServerError
 
 URLS = {
     'login': 'https://auth.univ-paris-diderot.fr/cas/login',
@@ -55,6 +56,16 @@ class Session(BaseSession):
         return super(Session, self).post(url, *args, **kwargs)
 
 
+    def check_response(self, resp):
+        """
+        Check a response and returns ``True`` if it has a success status code,
+        or raises a ``DidelServerError`` if not.
+        """
+        if resp.ok:
+            return True
+        raise DidelServerError(resp)
+
+
     def login(self, username, passwd):
         """
         Authenticate an user
@@ -75,7 +86,7 @@ class Session(BaseSession):
             '_eventId': 'submit',
         }
         resp = self.post(url, params=params, data=data)
-        return resp.ok and 'Log In Successful' in resp.text
+        return self.check_response(resp) and 'Log In Successful' in resp.text
 
 
     def get_ensure_text(self, url, text, *args, **kw):
@@ -84,4 +95,4 @@ class Session(BaseSession):
         returned html
         """
         resp = self.get(url, *args, **kw)
-        return resp.ok and text in resp.text
+        return self.check_response(resp) and text in resp.text

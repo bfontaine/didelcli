@@ -3,6 +3,19 @@
 from didel.base import DidelEntity
 from didel.courses import Course
 from didel.session import Session
+from didel.exceptions import DidelLoginRequired
+
+def login_required(mth):
+    """
+    An internal decorator to ensure a ``Student`` method is never called with a
+    disconnected session.
+    """
+    def _mth(self, *args, **kw):
+        if not self.logged:
+            raise DidelLoginRequired()
+        return self.mth(*args, **kw)
+    _mth.__name__ = mth.__name__
+    return _mth
 
 
 class Student(DidelEntity):
@@ -21,6 +34,7 @@ class Student(DidelEntity):
             self.fetch(self.session)
 
 
+    @login_required
     def populate(self, soup, *args, **kw):
         aliases = {'officialCode': 'code', 'uidToEdit': 'auth_id'}
         for attr in ('firstname', 'lastname', 'officialCode', 'username',
@@ -30,6 +44,7 @@ class Student(DidelEntity):
             setattr(self, attr, value)
 
 
+    @login_required
     def get_course(self, ref):
         """
         Return a Course object

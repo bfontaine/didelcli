@@ -2,7 +2,11 @@ v0.1.2 (upcoming version)
 
 General changes:
 
-* ~/.netrc support
+* ~/.netrc support for authentication
+
+Minor changes
+
+* `^C` properly handled by the CLI module
 
 Python API:
 
@@ -12,6 +16,10 @@ Python API:
 * `Session#logout` removed. It’s not necessary because cookies are not saved
   between sessions so just deleting the session object disconnects you
 * `logged` boolean attribute added on `Student`
+* New module: `didel.exceptions`, provides `DidelLoginRequired` which is raised
+  by the `Student` methods which require a loggued session and
+  `DidelServerError` which is raised by `Session` objects in some methods to
+  signal a server-side error.
 
 
 v0.1.1, 2015-01-31 -- Python 2.6 support
