@@ -25,10 +25,7 @@ class Student(DidelEntity):
         aliases = {'officialCode': 'code', 'uidToEdit': 'auth_id'}
         for attr in ('firstname', 'lastname', 'officialCode', 'username',
                 'email', 'phone', 'skype', 'uidToEdit'):
-            matches = soup.select('input#%s' % attr)
-            if not matches:
-                continue
-            value = matches[0].attrs['value']
+            value = soup.select('input#%s' % attr)[0].attrs['value']
             attr = aliases.get(attr, attr)
             setattr(self, attr, value)
 
