@@ -10,6 +10,7 @@ else:
 import requests
 import responses
 
+from didel.exceptions import DidelServerError
 from didel.session import Session, ROOT_URL
 
 class TestSession(unittest.TestCase):
@@ -65,12 +66,12 @@ class TestSession(unittest.TestCase):
     # TODO: login
 
     @responses.activate
-    def test_get_ensure_text_false_on_error(self):
+    def test_get_ensure_text_raise_on_error(self):
         path = '/foo/xyz/aq1'
         url = '%s%s' % (ROOT_URL, path)
         responses.add(responses.GET, url, body='oops', status=404)
         s = Session()
-        self.assertFalse(s.get_ensure_text(path, 'oops'))
+        self.assertRaises(DidelServerError, s.get_ensure_text, path, 'oops')
         self.assertEquals(1, len(responses.calls))
 
     @responses.activate
