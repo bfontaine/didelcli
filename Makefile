@@ -52,7 +52,8 @@ covercheck:
 	@echo '--> open htmlcov/index.html'
 
 stylecheck:
-	$(BINPREFIX)pyflakes didel
+	$(BINPREFIX)pylint $(SRC)
+	$(BINPREFIX)pyflakes $(SRC)
 
 dist: deps clean-dist
 	$(BINPREFIX)python setup.py sdist
