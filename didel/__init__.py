@@ -1,5 +1,9 @@
 # -*- coding: UTF-8 -*-
 
+"""
+This module provides a set of functions and classes to interface with DidEL.
+"""
+
 __version__ = '0.1.1'
 
 # Shortcuts

@@ -1,11 +1,15 @@
 # -*- coding: UTF-8 -*-
 
+"""
+Command-line interface for ``didel``.
+"""
+
 from __future__ import print_function
 
 import inspect
 from getpass import getpass
 from os.path import expanduser
-from sys import argv, exit
+from sys import argv
 
 from didel import __version__
 from didel.config import DidelConfig
@@ -16,25 +20,32 @@ HELP_FLAGS = ('-h', '-help', '--help')
 
 
 class DidelCli(object):
+    """
+    A command-line interface to DidEL
+    """
 
-    def __init__(self, argv):
-        self.argv = argv
+    def __init__(self, args):
+        self.argv = args
         self.exe = self.argv.pop(0)
         self.config = DidelConfig.get_default()
 
 
-    def get_student(self, fetchInfos=False):
+    def get_student(self, fetch_infos=False):
+        """
+        Return a student object, built with locally-stored credentials, if
+        there are available.
+        """
         username, passwd = self.config.get_credentials()
         if username is None or passwd is None:
             print("Configure your login credentials with" \
                   " '%s login:init <username>'" % self.exe)
             return None
-        return Student(username, passwd, autofetch=fetchInfos)
+        return Student(username, passwd, autofetch=fetch_infos)
 
 
     def get_course(self, code, student=None):
         """
-        Shortcut for ``self.get_student().get_course(code)``
+        Shortcut for ``self.get_student().get_course(code)``.
         """
         if student is None:
             student = self.get_student()
@@ -45,10 +56,16 @@ class DidelCli(object):
 
 
     def print_version(self):
+        """
+        Print the current version.
+        """
         print("DidelCli v%s -- http://git.io/didelcli" % __version__)
 
 
     def print_help(self):
+        """
+        Print some help, using introspection to get all actions.
+        """
         name_offset = len('action_')
         print("\nUsage:\n\t%s <subcommand> args..." % self.exe)
         print("\nAvailable subcommands:\n")
@@ -65,7 +82,7 @@ class DidelCli(object):
         """
         Print an help text for a subcommand
         """
-        params = map(lambda s: '<%s>' % s, params)
+        params = ['<%s>' % s for s in params]
         print("Usage:\n\t%s %s %s\n" % (self.exe, action, params))
         if docstring:
             print("%s\n" % docstring.strip())
@@ -111,7 +128,7 @@ class DidelCli(object):
         """
         Show some info about your profile
         """
-        s = self.get_student(fetchInfos=True)
+        s = self.get_student(fetch_infos=True)
         if not s:
             return False
         print("%s %s (%s)\n" % (s.firstname, s.lastname, s.username))
@@ -222,11 +239,11 @@ class DidelCli(object):
         the situation.
         """
         # We're using a custom parser here to handle subcommands.
-        argv = self.argv
-        argc = len(argv)
+        args = self.argv
+        argc = len(args)
         if argc == 0:
             return self.print_help()
-        action = argv.pop(0)
+        action = args.pop(0)
         argc -= 1
         if action in HELP_FLAGS:
             self.print_version()
@@ -254,7 +271,7 @@ class DidelCli(object):
         defaults_len = len(spec_defaults)
         required_len = len(spec_args) - defaults_len
 
-        if argc < required_len or (argc > 0 and argv[0] in HELP_FLAGS):
+        if argc < required_len or (argc > 0 and args[0] in HELP_FLAGS):
             defaults = list(reversed(spec_args))[:defaults_len]
             args = []
             for arg in spec_args:
@@ -269,7 +286,7 @@ class DidelCli(object):
             print("Usage:\n\t%s %s %s" % (self.exe, action, ' '.join(args)))
             return False
 
-        return fun(*argv)
+        return fun(*args)
 
 
 def abort(msg, code=1):

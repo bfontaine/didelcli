@@ -1,5 +1,9 @@
 # -*- coding: UTF-8 -*-
 
+"""
+Basic entities
+"""
+
 try:
     from urlparse import urljoin
 except ImportError:  # Python 3

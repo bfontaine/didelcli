@@ -25,6 +25,7 @@ load-plugins=
 # superfluous-parens
 # import-error
 # no-name-in-module
+# locally-disabled
 disable=W0201,C0325,F0401,E0611
 
 
