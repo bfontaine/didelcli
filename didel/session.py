@@ -3,11 +3,6 @@
 from bs4 import BeautifulSoup
 from requests import Session as BaseSession
 
-try:
-    from cookielib import LWPCookieJar
-except ImportError:  # Python 3
-    from http.cookiejar import LWPCookieJar
-
 from didel.base import ROOT_URL
 from didel.exceptions import DidelServerError
 
@@ -33,7 +28,6 @@ class Session(BaseSession):
     def __init__(self, *args, **kwargs):
         super(Session, self).__init__(*args, **kwargs)
         self.headers.update(HEADERS)
-        self.cookies = LWPCookieJar()
 
 
     def get_url(self, url):
