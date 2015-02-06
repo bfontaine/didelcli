@@ -227,9 +227,8 @@ class DidelCli(object):
                   " '%s pull:save <path>'" % self.exe)
             return None
         print("pull to %s" % path)
-        all_courses = student.get_all_courses()
-        for course in all_courses:
-            course.docs_and_links(path)
+        for course in student.get_all_courses():
+            course.synchronize_docs(path)
 
 
     def action_pull_save(self, path):

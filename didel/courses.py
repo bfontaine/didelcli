@@ -7,12 +7,10 @@ try:
 except ImportError:  # Python 3
     from urllib.parse import urlparse, parse_qs
 
-from didel.base import DidelEntity, ROOT_URL
+from didel.base import DidelEntity
+from didel.fileutils import date2timestamp, mkdir_p, file_mtime
 from didel.souputils import parse_homemade_dl
-import re, os, datetime
-
-from time import mktime
-from os import mkdir
+import re, os
 
 class CoursePage(DidelEntity):
     """
@@ -125,12 +123,12 @@ class Course(CoursePage):
             self.about = about[0].get_text().strip()
 
 
-    def docs_and_links(self, path):
+    def synchronize_docs(self, path):
         """
-        synchronize didel documents with user
+        Synchronize the documents in the given path with the ones from the
+        courses followed by the student. The path will be created and populated
+        if it doesn't exist.
         """
-        if not (os.path.isdir(path)):
-            raise IOError # if the path defined in SOURCE_FILE (cf config.py) isn't available
         d = DocumentsLinks(self.ref)
         d.fetch(self.session)
         d.synchronize(path)
@@ -172,14 +170,14 @@ class DocumentsLinks(DidelEntity):
         self.ref = ref
         if path :
             self.path = path
-            self.ref = ""            
+            self.ref = ""
         else:
             self.path = self.URL_FMT.format(ref=ref)
 
 
     def populate(self, soup, session):
         """
-        Get all documents and folder of a course.
+        Get all documents and folder from a course.
         """
         table = soup.select(".claroTable tbody tr[align=center]")
         for line in table:
@@ -188,17 +186,15 @@ class DocumentsLinks(DidelEntity):
             name = item.contents[1].strip()
             date = cols[2].select("small")[0].contents[0].strip()
             url = cols[0].select("a")[0].attrs["href"].strip()
-            if(re.match(r"^<img (alt=\"\")? src=\"/web/img/folder", str(item.select("img")[0]))) is not None:
+            # TODO use a selector here
+            if re.match(r"^<img (alt=\"\")? src=\"/web/img/folder", str(item.select("img")[0])):
                 doc = DocumentsLinks("", url)
                 doc.fetch(self.session)
-                self.add_resource(name, doc)
             else:
-                self.add_resource(name, Document(name, url, date))
+                doc = Document(name, url, date)
+            self.add_resource(name, doc)
 
-    def timestamp(self, date):
-        return mktime(datetime.datetime.strptime(date, "%d.%m.%Y").timetuple())
 
- 
     def synchronize(self, path):
         """
         compare files on didel with file in folder,
@@ -206,24 +202,29 @@ class DocumentsLinks(DidelEntity):
             only if not exist or older
         """
         path = "%s/%s" % (path, self.ref)
-        if not os.path.isdir(path):
-            mkdir(path)
-        for k in self._resources:
-            if(isinstance(self._resources[k], DocumentsLinks)): 
-                self._resources[k].synchronize("%s/%s" % (path, k))
+        mkdir_p(path)
+        for k, resource in self._resources.items():
+            if isinstance(resource, DocumentsLinks):
+                resource.synchronize("%s/%s" % (path, k))
             else:
                 no_file = not os.path.exists("%s/%s" % (path, k))
-                didel_file = self.timestamp(self._resources[k].date)
-                if no_file or (didel_file > os.stat("%s/%s" % (path, k)).st_mtime):
-                    self.download(self._resources[k], path)
-    
+                didel_time = date2timestamp(resource.date)
+                if no_file or didel_time > file_mtime("%s/%s" % (path, k)):
+                    self.download(resource, path)
 
+
+    # TODO move this on the Document class
     def download(self, document, path):
-        response = self.session.get(ROOT_URL + document.url)
+        """
+        Download a document in a given path, provided that the parent
+        directories already exist
+        """
+        response = self.session.get(document.url)
         document.path = "%s/%s" % (path, document.name)
         with open(document.path, 'w') as file:
+            # TODO use a binary stream here
             file.write(response.content)
-        
+
 
 
 class Document(object):

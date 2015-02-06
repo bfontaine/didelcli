@@ -36,7 +36,7 @@ class Student(DidelEntity):
         Return a Course object
         """
         if not self.logged:
-            raise DidelLoginRequired()  
+            raise DidelLoginRequired()
         if not ref in self._courses:
             c = Course(ref, self)
             c.fetch(self.session)
@@ -46,19 +46,20 @@ class Student(DidelEntity):
 
     def get_all_courses(self):
         """
-        return all courses
+        Return all courses as a list of Course objects
         """
         if not self.logged:
-            raise DidelLoginRequired()              
+            raise DidelLoginRequired()
         sc = StudentCoursesRefs()
         sc.fetch(self.session)
+        # TODO use a generator and/or a subresource?
         return [self.get_course(ref) for ref in sc.refs]
 
 
 
-class StudentCoursesRefs(DidelEntity):   
+class StudentCoursesRefs(DidelEntity):
     """
-    didel main page 
+    didel main page
     """
 
     def __init__(self):

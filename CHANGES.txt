@@ -3,6 +3,10 @@ v0.1.2 (upcoming version)
 General changes:
 
 * ~/.netrc support for authentication
+* `pull:save` and `pull` actions added by @tsalmon (#4)
+  The first one lets you choose a path for the second one, which allows you to
+  get all files from all the courses you follow in one directory that can later
+  be updated with the same command.
 
 Minor changes
 
@@ -13,9 +17,16 @@ Python API:
 * `DidelConfig#get_credentials` added, which returns a pair of `username` and
   `password` for the current configuration, or fallback on `~/.netrc` if it
   can.
+
 * `Session#logout` removed. It’s not necessary because cookies are not saved
   between sessions so just deleting the session object disconnects you
-* `logged` boolean attribute added on `Student`
+
+* `logged` boolean attribute added on `Student`. It'll be `True` if the student
+  was successfully logged in.
+* `Student#synchronize_docs` method added (#4), it fetches all documents from
+  all courses followed by the user and download them in the given path. It
+  doesn't re-download a document if it already exist locally.
+
 * New module: `didel.exceptions`, provides `DidelLoginRequired` which is raised
   by the `Student` methods which require a loggued session and
   `DidelServerError` which is raised by `Session` objects in some methods to
