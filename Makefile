@@ -1,4 +1,4 @@
-.PHONY: all freeze check covercheck coverhtml dist
+.PHONY: all freeze check covercheck dist
 
 SRC=didel
 
