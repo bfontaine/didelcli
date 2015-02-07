@@ -50,7 +50,9 @@ class TestFileutils(unittest.TestCase):
         self.assertEquals(42, date2timestamp("31.02.2014", 42))
 
     def test_date2timestamp_good_date(self):
-        self.assertEquals(1425078000, date2timestamp("28.02.2015", 42))
+        d1 = date2timestamp("29.01.2015", 43)
+        d2 = date2timestamp("28.02.2015", 42)
+        self.assertLess(d1, d2)
 
     # file_mtime
 

@@ -9,7 +9,8 @@ import errno
 def date2timestamp(text, default=None):
     """
     Return a timestamp from a date text, assuming it was formatted as it is on
-    the documents page of a course on Didel
+    the documents page of a course on Didel. Note that it assumes you're in the
+    same timezone as DidEL (which is hosted in France).
     """
     try:
         date = datetime.strptime(text, "%d.%m.%Y")
