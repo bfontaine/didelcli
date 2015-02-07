@@ -159,14 +159,15 @@ class DidelConfig(object):
         return (username, passwd)
 
 
-    def _get_netrc_credentials(self):
+    def _get_netrc_credentials(self, filename=None):
         """
-        Fallback of ``get_credentials`` if credentials weren't configured.
+        Fallback of ``get_credentials`` if credentials weren't configured. It
+        tries to find credentials in the user's ``~/.netrc`` file.
         """
         from netrc import NetrcParseError, netrc as NetrcFile
         source = None
         try:
-            source = NetrcFile()
+            source = NetrcFile(filename)
         except NetrcParseError:
             return (None, None)
 
