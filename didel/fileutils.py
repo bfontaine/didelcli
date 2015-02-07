@@ -6,12 +6,16 @@ from time import mktime
 from datetime import datetime
 import errno
 
-def date2timestamp(date):
+def date2timestamp(text, default=None):
     """
-    Return a timestamp from a date, assuming it was formatted as it is on
+    Return a timestamp from a date text, assuming it was formatted as it is on
     the documents page of a course on Didel
     """
-    return mktime(datetime.strptime(date, "%d.%m.%Y").timetuple())
+    try:
+        date = datetime.strptime(text, "%d.%m.%Y")
+    except ValueError:
+        return default
+    return mktime(date.timetuple())
 
 
 def file_mtime(path):
