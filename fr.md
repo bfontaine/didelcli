@@ -71,7 +71,7 @@ Lister les devoirs à rendre d’un cours : `didel assignments:list <code>`
     1) Rendu intermédiaire du TP N°1 (Vendredi 03 Octobre 2014 à 14:00)
     2) TP N°1 (Jeudi 16 Octobre 2014 à 23:59)
 
-Obtenir des informations sur un devoir en particulier :    
+Obtenir des informations sur un devoir en particulier :
 `didel assignments:show <code> <indice>`
 
     $ didel assignments:show M2T2INFOEMB 1
@@ -81,11 +81,30 @@ Obtenir des informations sur un devoir en particulier :
     Visibility: Visible uniquement par le(s) gestionnaire(s) et le(s) propriétaire(s)
     Work Type: Individuel
 
-Soumettre un devoir sous forme de fichier :    
+Soumettre un devoir sous forme de fichier :
 `didel assignments:submit <code> <indice> <titre> <fichier>`
 
     $ didel assignments:submit M2T2INFOEMB 1 "TP 1 WIP" mon/tp1.tgz
 
+### Documents
+
+Depuis la version `0.1.2` il est possible de télécharger tous les documents des
+cours que l’on suit en une seul ligne de commande. La première fois, utilisez
+`didel pull:save <chemin>` :
+
+    $ didel pull:save mondossier
+
+L’outil va récupérer la liste de vos matières et télécharger tous les documents
+associés dans des sous-répertoires de `mondossier`. Vous pourrez ensuite
+utiliser tout simplement `didel pull` pour mettre à jour ce répertoire.
+Didelcli se souvient de l’emplacement du répertoire, il n’est pas nécessaire de
+le re-spécifier. De plus, il vérifie la date des fichiers téléchargés et ne
+re-télécharge pas un fichier qui n’a pas été mis à jour.
+
+Cette fonctionnalité permettant de récupérer les documents de Didel en local a
+été ajoutée par [@tsalmon][ts].
+
+[ts]: https://github.com/tsalmon
 
 ### Profil
 
