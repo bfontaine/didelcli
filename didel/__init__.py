@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 # Shortcuts
 from didel.courses import Course, CourseAssignment, CourseAssignments

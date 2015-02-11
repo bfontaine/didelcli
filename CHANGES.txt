@@ -1,12 +1,13 @@
-v0.1.2 (upcoming version)
+v0.1.2, 2015-02-11 -- Pull files from Didel
 
 General changes:
 
 * ~/.netrc support for authentication
 * `pull:save` and `pull` actions added by @tsalmon (#4)
-  The first one lets you choose a path for the second one, which allows you to
-  get all files from all the courses you follow in one directory that can later
-  be updated with the same command.
+  The first one lets you choose a path where it'll download all files from all
+  the courses you follow in one directory that can later be updated with the
+  second command. `pull:save` saves the path so that `pull` doesn’t need it,
+  it’ll pull in the previously saved path.
 
 Minor changes
 
