@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from didel.base import DidelEntity
-from didel.courses import Course
+from didel.courses import Course, CoursesMainPage
 from didel.session import Session
 from didel.exceptions import DidelLoginRequired
 
@@ -17,6 +17,7 @@ class Student(DidelEntity):
         self.path = '/claroline/auth/profile.php'
         self._courses = {}  # cache
         self.logged = self.session.login(self.username, password)
+        self.add_resource("courses", CoursesMainPage)
         if autofetch:
             self.fetch(self.session)
 
@@ -44,18 +45,6 @@ class Student(DidelEntity):
         return self._courses[ref]
 
 
-    def get_all_courses(self):
-        """
-        Return all courses as a list of Course objects
-        """
-        if not self.logged:
-            raise DidelLoginRequired()
-        sc = StudentCoursesRefs()
-        sc.fetch(self.session)
-        # TODO use a generator and/or a subresource?
-        return [self.get_course(ref) for ref in sc.refs]
-
-
 
 class StudentCoursesRefs(DidelEntity):
     """
@@ -64,7 +53,7 @@ class StudentCoursesRefs(DidelEntity):
 
     def __init__(self):
         super(StudentCoursesRefs, self).__init__()
-        self.path = '/?fromCasServer=true'
+        self.path = '/'
         self.refs = []
 
 

@@ -160,6 +160,26 @@ class Course(CoursePage):
         return self.session.get_ensure_text(path, text, params=params)
 
 
+class CoursesMainPage(DidelEntity, list):
+    """
+    DidEL's student homepage
+    """
+
+    def __init__(self):
+        super(CoursesMainPage, self).__init__()
+        self.path = '/'
+
+
+    def populate(self, soup, *args, **kw):
+        for ref in soup.select("dt a"):
+            href = ref.get("href")
+            if not href:
+                continue
+            print href
+            r = href.split("=")[1]
+            self.append(Course(r))
+
+
 class DocumentsLinks(DidelEntity):
 
     URL_FMT = '/claroline/document/document.php?cidReset=true&cidReq={ref}'

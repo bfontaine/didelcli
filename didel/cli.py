@@ -215,22 +215,23 @@ class DidelCli(object):
             return a.submit(s, title, f)
 
 
-    def action_pull(self):
+    def action_pull(self, path=None):
         """
         Pull all documents from each followed course in a folder, using the
         path defined with ``didel pull:save``.
         """
-        student = self.get_student() # check if student is initialized in `SOURCE_FILE`
-        path = self.config.get("Courses.path")
+        student = self.get_student()
+        if not student:
+            return False
         if path is None:
-            print("Configure your path to pull with" \
-                  " '%s pull:save <path>'" % self.exe)
-            return None
-        print("pull to %s" % path)
-        for course in student.get_all_courses():
+            path = self.config.get("Courses.path", ".")
+        print("Pull documents to %s..." % path)
+        for course in student.courses:
+            print(course.title)
             course.synchronize_docs(path)
 
 
+    # TODO use --save instead
     def action_pull_save(self, path):
         """
         Define the path where we'll download all files with ``didel pull``.
@@ -316,4 +317,4 @@ def run():
     except DidelServerError as e:
         abort("%s" % e)
 
-    exit(1) if ret is None or ret == False else exit(0)
+    exit(1) if ret == False else exit(0)
