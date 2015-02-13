@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import inspect
 from getpass import getpass
-from os.path import expanduser
+from os.path import expanduser, abspath
 from sys import argv, exit
 
 from didel import __version__
@@ -225,6 +225,7 @@ class DidelCli(object):
             return False
         if path is None:
             path = self.config.get("Courses.path", ".")
+        path = abspath(path)
         print("Pull documents to %s..." % path)
         for course in student.courses:
             print(course.title)
@@ -234,9 +235,10 @@ class DidelCli(object):
     # TODO use --save instead
     def action_pull_save(self, path):
         """
-        Define the path where we'll download all files with ``didel pull``.
+        Same as ``didel pull``, but save the path in the config for later
+        usage.
         """
-        self.config.set("Courses.path", path, True)
+        self.config.set("Courses.path", abspath(path), True)
         self.action_pull()
 
 
