@@ -220,7 +220,7 @@ class DidelCli(object):
         Pull all documents from each followed course in a folder, using the
         path defined with ``didel pull:save``.
         """
-        student = self.get_student()
+        student = self.get_student(fetchInfos=True)
         if not student:
             return False
         if path is None:
@@ -228,8 +228,8 @@ class DidelCli(object):
         path = abspath(path)
         print("Pull documents to %s..." % path)
         for course in student.courses:
-            print(course.title)
-            course.synchronize_docs(path)
+            print(course.ref)
+            course.synchronize_docs(path, student.session)
 
 
     # TODO use --save instead

@@ -12,6 +12,10 @@ from didel.fileutils import date2timestamp, mkdir_p, file_mtime
 from didel.souputils import parse_homemade_dl
 import re, os
 
+def parse_query(url):
+    return parse_qs(urlparse(url).query)
+
+
 class CoursePage(DidelEntity):
     """
     A common base for Course-related pages
@@ -46,7 +50,7 @@ class CourseAssignment(CoursePage):
         self.submission_type = attrs.get('type de soumission')
         self.work_type = attrs.get('type de travail')
         self.visibility = attrs.get(u'visibilit\xe9 de la soumission')
-        self.assig_id = parse_qs(urlparse(self.path).query)['assigId'][0]
+        self.assig_id = parse_query(self.path)['assigId'][0]
 
 
     def submit(self, student, title, datafile, description=''):
@@ -123,14 +127,14 @@ class Course(CoursePage):
             self.about = about[0].get_text().strip()
 
 
-    def synchronize_docs(self, path):
+    def synchronize_docs(self, path, session):
         """
         Synchronize the documents in the given path with the ones from the
         courses followed by the student. The path will be created and populated
         if it doesn't exist.
         """
-        d = DocumentsLinks(self.ref)
-        d.fetch(self.session)
+        d = CourseDocuments(self.ref)
+        d.fetch(session)
         d.synchronize(path)
 
 
@@ -175,17 +179,18 @@ class CoursesMainPage(DidelEntity, list):
             href = ref.get("href")
             if not href:
                 continue
-            print href
-            r = href.split("=")[1]
-            self.append(Course(r))
+            cid = parse_query(href).get("cid")
+            if not cid:
+                continue
+            self.append(Course(cid[0]))
 
 
-class DocumentsLinks(DidelEntity):
+class CourseDocuments(DidelEntity):
 
     URL_FMT = '/claroline/document/document.php?cidReset=true&cidReq={ref}'
 
     def __init__(self, ref, path=None):
-        super(DocumentsLinks, self).__init__()
+        super(CourseDocuments, self).__init__()
         self.ressources = {}
         self.ref = ref
         if path :
@@ -208,10 +213,10 @@ class DocumentsLinks(DidelEntity):
             url = cols[0].select("a")[0].attrs["href"].strip()
             # TODO use a selector here
             if re.match(r"^<img (alt=\"\")? src=\"/web/img/folder", str(item.select("img")[0])):
-                doc = DocumentsLinks("", url)
+                doc = CourseDocuments("", url)
                 doc.fetch(self.session)
             else:
-                doc = Document(name, url, date)
+                doc = CourseDocument(name, url, date)
             self.add_resource(name, doc)
 
 
@@ -224,7 +229,7 @@ class DocumentsLinks(DidelEntity):
         path = "%s/%s" % (path, self.ref)
         mkdir_p(path)
         for k, resource in self._resources.items():
-            if isinstance(resource, DocumentsLinks):
+            if isinstance(resource, CourseDocuments):
                 resource.synchronize("%s/%s" % (path, k))
             else:
                 no_file = not os.path.exists("%s/%s" % (path, k))
@@ -233,7 +238,7 @@ class DocumentsLinks(DidelEntity):
                     self.download(resource, path)
 
 
-    # TODO move this on the Document class
+    # TODO move this on the CourseDocument class
     def download(self, document, path):
         """
         Download a document in a given path, provided that the parent
@@ -247,7 +252,7 @@ class DocumentsLinks(DidelEntity):
 
 
 
-class Document(object):
+class CourseDocument(object):
 
     def __init__(self, name, url, date):
         self.name = name
