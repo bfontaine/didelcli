@@ -215,10 +215,9 @@ class DidelCli(object):
             return a.submit(s, title, f)
 
 
-    def action_pull(self, path=None):
+    def action_pull(self, path="."):
         """
-        Pull all documents from each followed course in a folder, using the
-        path defined with ``didel pull:save``.
+        Pull all documents from each followed course in a folder.
         """
         student = self.get_student(fetchInfos=True)
         if not student:
@@ -276,7 +275,7 @@ class DidelCli(object):
         spec = inspect.getargspec(fun)
         # skip 'self'
         spec_args = (spec.args or ())[1:]
-        spec_defaults = (spec.defaults or ())[1:]
+        spec_defaults = spec.defaults or ()
         defaults_len = len(spec_defaults)
         required_len = len(spec_args) - defaults_len
 
