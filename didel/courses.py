@@ -7,10 +7,11 @@ try:
 except ImportError:  # Python 3
     from urllib.parse import urlparse, parse_qs
 
+import os
+
 from didel.base import DidelEntity
 from didel.fileutils import date2timestamp, mkdir_p, file_mtime
 from didel.souputils import parse_homemade_dl
-import re, os
 
 def parse_query(url):
     return parse_qs(urlparse(url).query)
@@ -211,8 +212,8 @@ class CourseDocuments(DidelEntity):
             name = item.contents[1].strip()
             date = cols[2].select("small")[0].contents[0].strip()
             url = cols[0].select("a")[0].attrs["href"].strip()
-            # TODO use a selector here
-            if re.match(r"^<img (alt=\"\")? src=\"/web/img/folder", str(item.select("img")[0])):
+
+            if item.select("img[src^=/web/img/folder.png]"):
                 doc = CourseDocuments("", url)
                 doc.fetch(self.session)
             else:
