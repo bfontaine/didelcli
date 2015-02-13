@@ -43,6 +43,27 @@ class DidelCli(object):
         return student.get_course(code)
 
 
+    def migrate_config(self):
+        """
+        Migrate old config options
+        """
+        renames = {
+            "Courses.path": "courses.syncpath"
+        }
+
+        changed = False
+
+        for old,new in renames.items():
+            v_old, v_new = self.config.get(old), self.config.get(new)
+            if v_old is not None and v_new is None:
+                self.config.set(new, v_old)
+                changed = True
+
+        if changed:
+            self.config.save()
+
+
+
     def print_version(self):
         print("DidelCli v%s -- http://git.io/didelcli" % __version__)
 
@@ -215,15 +236,16 @@ class DidelCli(object):
             return a.submit(s, title, f)
 
 
-    def action_pull(self, path="."):
+    def action_pull(self, path=None):
         """
         Pull all documents from each followed course in a folder.
         """
+        self.migrate_config()
         student = self.get_student(fetchInfos=True)
         if not student:
             return False
         if path is None:
-            path = self.config.get("Courses.path", ".")
+            path = self.config.get("courses.syncpath", ".")
         path = abspath(path)
         print("Pull documents to %s..." % path)
         for course in student.courses:
@@ -237,8 +259,8 @@ class DidelCli(object):
         Same as ``didel pull``, but save the path in the config for later
         usage.
         """
-        self.config.set("Courses.path", abspath(path), True)
-        self.action_pull()
+        self.config.set("courses.syncpath", abspath(path), True)
+        self.action_pull(path)
 
 
     def run(self):
