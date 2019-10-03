@@ -5,7 +5,7 @@ mock==1.0.1
 ordereddict==1.1
 py==1.4.25
 pyflakes==0.8.1
-requests==2.4.2
+requests==2.20.0
 responses==0.2.2
 six==1.8.0
 tox==1.8.0
